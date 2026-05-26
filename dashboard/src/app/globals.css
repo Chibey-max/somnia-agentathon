@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --bg: #0a0a0a;
+  --bg-panel: #0f0f0f;
+  --bg-elevated: #141414;
+  --bg-hover: #1a1a1a;
+  --border: #1e1e1e;
+  --border-bright: #2a2a2a;
+  --green: #00ff88;
+  --green-dim: #00cc6a;
+  --orange: #ff6b35;
+  --red: #ff3333;
+  --blue: #0070f3;
+  --blue-bright: #3b82f6;
+  --yellow: #ffd700;
+  --text-primary: #e8e8e8;
+  --text-secondary: #888888;
+  --text-muted: #555555;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 255, 136, 0.2);
+  color: var(--green);
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 1px solid rgba(0, 255, 136, 0.5);
+  outline-offset: 2px;
+}
+
+/* Terminal grid noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.018;
+  mix-blend-mode: overlay;
+}
+
+/* Utility classes */
+.font-mono-numbers {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+/* Table reset */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* Smooth transitions */
+a {
+  transition: color 0.15s ease;
+}
+
+button {
+  cursor: pointer;
+}
+
+input, textarea {
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+/* CRT flicker - very subtle */
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  98% { opacity: 1; }
+  99% { opacity: 0.97; }
+}
+
+.crt {
+  animation: crt-flicker 8s infinite;
+}
