@@ -1,0 +1,13 @@
+{
+  "name": "eth-agent-workspace",
+  "private": true,
+  "scripts": {
+    "mcp": "npm --prefix runtime run -s mcp",
+    "agent": "npm --prefix runtime run agent --",
+    "setup": "npm --prefix runtime run setup",
+    "allow-eth-recipient": "npm --prefix runtime run allow-eth-recipient --",
+    "apply-setup": "npm --prefix runtime run apply-setup",
+    "check-pending": "npm --prefix runtime run check-pending",
+    "build": "npm --prefix runtime run build"
+  }
+}
