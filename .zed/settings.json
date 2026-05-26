@@ -1,0 +1,11 @@
+{
+  "context_servers": {
+    "eth-agent": {
+      "command": {
+        "path": "npm",
+        "args": ["run", "-s", "mcp"]
+      },
+      "settings": {}
+    }
+  }
+}
