@@ -47,7 +47,7 @@ cd contracts
 cp .env.example .env
 ```
 
-Edit `contracts/.env`:
+Edit `contracts/.env` (the template already includes `RPC_URL` by default after `cp .env.example .env`):
 
 ```env
 AGENT_ADDRESS=0x...         # public address of the AGENT wallet
@@ -55,6 +55,8 @@ GUARDIAN_ADDRESS=0x...      # public address of the GUARDIAN wallet
 PRIVATE_KEY=0x...           # DEPLOYER private key (funded on Sepolia)
 RPC_URL=https://sepolia.drpc.org
 ```
+
+`RPC_URL` is pre-populated by default from `.env.example`.
 
 Load env into shell:
 
@@ -105,7 +107,7 @@ cd ../runtime
 cp .env.example .env
 ```
 
-Edit `runtime/.env`:
+Edit `runtime/.env` (the template already includes `RPC_URL` by default after `cp .env.example .env`):
 
 ```env
 AGENT_CONTRACT_ADDRESS=0x...   # from deploy output
@@ -114,6 +116,8 @@ RPC_URL=https://sepolia.drpc.org
 GROQ_API_KEY=...
 CHAIN_ID=11155111
 ```
+
+`RPC_URL` is pre-populated by default from `.env.example`.
 
 ---
 
@@ -236,12 +240,38 @@ Must be `0x` + 64 hex chars.
 set -a; source .env; set +a
 ```
 
-### `Connection refused` / provider error from Ankr
-Use another RPC:
+### `Connection refused` / transport error (`os error 111`)
+Your RPC endpoint is unreachable from your current network, or the provider is temporarily unavailable.
+
+1) Test current RPC quickly:
+
+```bash
+cast block-number --rpc-url "$RPC_URL"
+```
+
+2) If that fails, switch `RPC_URL` in `.env` to another Sepolia endpoint (try one at a time):
 
 ```env
-RPC_URL=https://sepolia.drpc.org
+RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+# RPC_URL=https://rpc.sepolia.org
+# RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
+# RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
 ```
+
+3) Reload env and re-test:
+
+```bash
+set -a; source .env; set +a
+cast block-number --rpc-url "$RPC_URL"
+```
+
+4) Optional network check:
+
+```bash
+curl -I https://sepolia.drpc.org
+```
+
+If curl/RPC checks fail, try disabling VPN, changing network (e.g. hotspot), or using another RPC provider.
 
 ### `Agent key mismatch`
 `runtime/.env` `AGENT_PRIVATE_KEY` does not match the on-chain `agent` in deployed contract.
