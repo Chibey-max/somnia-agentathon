@@ -22,8 +22,8 @@ Connect your IDE assistant to an on-chain wallet with enforced limits, whitelist
 ## 1) Clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/eth-agent
-cd eth-agent
+git clone https://github.com/Chibey-max/Ethereum-Agentic.git
+cd Ethereum-Agentic
 ```
 
 ---
@@ -172,7 +172,7 @@ Use this in your IDE MCP config:
   "mcpServers": {
     "eth-agent": {
       "command": "node",
-      "args": ["/FULL/PATH/TO/eth-agent/runtime/dist/mcp-server.js"]
+      "args": ["/FULL/PATH/TO/Ethereum-Agentic/runtime/dist/mcp-server.js"]
     }
   }
 }
