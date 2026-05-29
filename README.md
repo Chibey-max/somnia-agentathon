@@ -60,6 +60,8 @@ RPC_URL=https://sepolia.drpc.org
 
 Load env into shell:
 
+> Important: after **any** `.env` change, run this again in the same terminal before deploying.
+
 ```bash
 set -a
 source .env
@@ -118,6 +120,14 @@ CHAIN_ID=11155111
 ```
 
 `RPC_URL` is pre-populated by default from `.env.example`.
+
+If you update `runtime/.env`, reload it in the same terminal before running runtime commands:
+
+```bash
+set -a
+source .env
+set +a
+```
 
 ---
 
