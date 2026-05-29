@@ -160,6 +160,26 @@ Try in IDE chat:
 
 ---
 
+## 7) Run the dashboard (web UI)
+
+From the repository root:
+
+```bash
+cd dashboard
+npm install
+cp .env.local.example .env.local
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+Notes:
+- `dashboard` `predev` automatically builds `../runtime` before starting Next.js.
+- If you edit `dashboard/.env.local`, restart the dev server.
+- For dashboard-specific details, see `dashboard/README.md`.
+
+---
+
 ## How it works
 
 ```text
