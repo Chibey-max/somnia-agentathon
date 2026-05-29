@@ -59,8 +59,11 @@ async function readContractState() {
   const [plcTxLimit, plcDailyLimit, plcUnlockTime, plcQueued] = pendingLimitChangeRaw as [bigint, bigint, bigint, boolean];
   const [pcTarget, pcSelector, pcCheckRecipient, pcCheckAmount, pcMaxAmount, pcUnlockTime, pcQueued] = pendingCallRaw as [string, string, boolean, boolean, bigint, bigint, boolean];
 
-  const dailySpentPercent = ethDailyLimit > 0n
-    ? Number((ethDailySpent * 10000n) / ethDailyLimit) / 100
+  const bigintZero = BigInt(0);
+  const percentScale = BigInt(10_000);
+
+  const dailySpentPercent = ethDailyLimit > bigintZero
+    ? Number((ethDailySpent * percentScale) / ethDailyLimit) / 100
     : 0;
 
   return {

@@ -142,8 +142,8 @@ export function TokenPolicyPanel() {
               <>
                 <ProgressBar
                   value={
-                    BigInt(lookupResult.dailyLimit) > 0n
-                      ? Number((BigInt(lookupResult.dailySpent) * 10000n) / BigInt(lookupResult.dailyLimit)) / 100
+                    BigInt(lookupResult.dailyLimit) > BigInt(0)
+                      ? Number((BigInt(lookupResult.dailySpent) * BigInt(10_000)) / BigInt(lookupResult.dailyLimit)) / 100
                       : 0
                   }
                   label="Daily spend"
@@ -173,8 +173,8 @@ export function TokenPolicyPanel() {
                 </div>
                 <ProgressBar
                   value={
-                    BigInt(policy.dailyLimit) > 0n
-                      ? Number((BigInt(policy.dailySpent) * 10000n) / BigInt(policy.dailyLimit)) / 100
+                    BigInt(policy.dailyLimit) > BigInt(0)
+                      ? Number((BigInt(policy.dailySpent) * BigInt(10_000)) / BigInt(policy.dailyLimit)) / 100
                       : 0
                   }
                 />

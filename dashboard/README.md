@@ -87,21 +87,17 @@ src/
 
 ## Agent Runtime Integration
 
-The Agent Chat panel calls `POST /api/agent` which streams Server-Sent Events from your runtime.
+The Agent Chat panel calls `POST /api/agent`.
 
-Your runtime must export a `runAgent` function:
+The dashboard API route runs in Node runtime and **spawns a separate runtime bridge process** (`runtime/src/dashboard-agent.ts`) to execute agent goals, then streams chunked JSON/SSE-like events back to the UI.
 
-```typescript
-// runtime/src/index.ts
-export async function runAgent(
-  goal: string,
-  onChunk: (chunk: { type: string; content?: string; name?: string; hash?: string }) => void
-): Promise<void> {
-  // ... your MCP-powered agent logic
-}
+This process boundary avoids Next.js module-format conflicts and keeps runtime execution isolated from dashboard bundling.
+
+End-to-end flow:
+
+```text
+dashboard UI -> /api/agent -> runtime bridge process -> AgentWallet/MCP logic -> streamed chunks -> dashboard UI
 ```
-
-Set `RUNTIME_PATH` in `.env.local` to point to your runtime directory.
 
 ## Design System
 
@@ -113,7 +109,25 @@ Set `RUNTIME_PATH` in `.env.local` to point to your runtime directory.
 | Blue accent | `#3b82f6` |
 | Warning orange | `#ff6b35` |
 | Danger red | `#ff3333` |
-| Font | Geist Mono |
+| Font | Space Grotesk (UI) + Geist Mono (code/mono) |
+
+## Chat Execution Modes
+
+The chat panel supports two modes:
+
+| Mode | Who signs | Source of funds | Policy enforcement |
+|---|---|---|---|
+| `Direct Wallet` | Connected browser wallet | Connected wallet address | None from `AgentWallet` contract |
+| `AgentWallet` | Runtime agent (`AGENT_PRIVATE_KEY`) | Deployed `AgentWallet` contract | Yes (whitelist + per-tx + daily limits + guardian controls) |
+
+### Notes
+
+- In **Direct Wallet** mode:
+  - address-based balance requests should include an explicit `0x...` address;
+  - transfers are sent only from the connected browser wallet.
+- In **AgentWallet** mode:
+  - requests are executed through the runtime + contract path;
+  - on-chain contract policy determines whether execution is allowed.
 
 ## Guardian Actions
 

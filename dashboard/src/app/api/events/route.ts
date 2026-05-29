@@ -29,7 +29,11 @@ const EVENT_SPECS = [
   { name: 'Unpaused', event: UNPAUSED_EVENT },
 ] as const;
 
-const LOOKBACK_BLOCKS = 50_400n; // ~7 days on Sepolia
+const BIGINT_ZERO = BigInt(0);
+const BIGINT_ONE = BigInt(1);
+const QUICKNODE_MIN_RANGE = BigInt(5);
+const DEFAULT_LOG_RANGE = BigInt(2_000);
+const LOOKBACK_BLOCKS = BigInt(50_400); // ~7 days on Sepolia
 const MAX_CHUNKS_PER_REQUEST = 80; // hard bound to keep latency predictable
 const MAX_EVENT_CACHE = 500;
 
@@ -82,7 +86,7 @@ export async function GET(req: NextRequest) {
         transport: http(url, { timeout: 5_000, retryCount: 0 }),
       }),
       // QuickNode discover plans can enforce very small eth_getLogs ranges.
-      maxLogRange: url.includes('quiknode.pro') ? 5n : 2_000n,
+      maxLogRange: url.includes('quiknode.pro') ? QUICKNODE_MIN_RANGE : DEFAULT_LOG_RANGE,
       url,
     }));
 
@@ -103,7 +107,7 @@ export async function GET(req: NextRequest) {
       ? BigInt(fromBlockParam)
       : latestBlock > LOOKBACK_BLOCKS
         ? latestBlock - LOOKBACK_BLOCKS
-        : 0n;
+        : BIGINT_ZERO;
 
     const previousHead = cacheHeadBlock;
 
@@ -119,8 +123,8 @@ export async function GET(req: NextRequest) {
     // If we already scanned up to a previous head, only scan newly mined blocks.
     const scanStartBlock =
       previousHead !== null && latestBlock > previousHead
-        ? previousHead + 1n > startBlock
-          ? previousHead + 1n
+        ? previousHead + BIGINT_ONE > startBlock
+          ? previousHead + BIGINT_ONE
           : startBlock
         : startBlock;
 
@@ -136,8 +140,8 @@ export async function GET(req: NextRequest) {
       let usedChunkFrom: bigint | null = null;
 
       for (const provider of providerStates) {
-        const span = provider.maxLogRange > 0n ? provider.maxLogRange : 1n;
-        const from: bigint = cursor >= span - 1n ? cursor - (span - 1n) : 0n;
+        const span = provider.maxLogRange > BIGINT_ZERO ? provider.maxLogRange : BIGINT_ONE;
+        const from: bigint = cursor >= span - BIGINT_ONE ? cursor - (span - BIGINT_ONE) : BIGINT_ZERO;
         const fromBlockChunk: bigint = from > scanStartBlock ? from : scanStartBlock;
 
         try {
@@ -175,8 +179,8 @@ export async function GET(req: NextRequest) {
           }
 
           // On repeated provider limits/timeouts, skip this provider for future chunks.
-          if (limitedRange === 5n || isTimeoutError(error)) {
-            provider.maxLogRange = 0n;
+          if (limitedRange === QUICKNODE_MIN_RANGE || isTimeoutError(error)) {
+            provider.maxLogRange = BIGINT_ZERO;
           }
 
           lastError = error;
@@ -198,17 +202,17 @@ export async function GET(req: NextRequest) {
       chunksScanned += 1;
 
       if (usedChunkFrom === scanStartBlock) {
-        scanCursor = scanStartBlock - 1n;
+        scanCursor = scanStartBlock - BIGINT_ONE;
         break;
       }
 
-      scanCursor = usedChunkFrom - 1n;
+      scanCursor = usedChunkFrom - BIGINT_ONE;
     }
 
     // Keep cache bounded and sorted newest-first by block/log index.
     cachedEvents.sort((a, b) => {
-      const ab = a.blockNumber ?? 0n;
-      const bb = b.blockNumber ?? 0n;
+      const ab = a.blockNumber ?? BIGINT_ZERO;
+      const bb = b.blockNumber ?? BIGINT_ZERO;
       if (ab === bb) return b.logIndex - a.logIndex;
       return ab > bb ? -1 : 1;
     });
@@ -229,7 +233,7 @@ export async function GET(req: NextRequest) {
 
     const events = recentLogs.map((log) => {
       const args = (log.args || {}) as Record<string, unknown>;
-      const bn = log.blockNumber ?? 0n;
+      const bn = log.blockNumber ?? BIGINT_ZERO;
 
       let target = '0x0000000000000000000000000000000000000000';
       let value = '0';

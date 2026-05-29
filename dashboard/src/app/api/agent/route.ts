@@ -1,7 +1,10 @@
 import { NextRequest } from 'next/server';
 import path from 'path';
+import fs from 'fs';
+import { spawn } from 'child_process';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,47 +21,107 @@ export async function POST(req: NextRequest) {
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
+        let closed = false;
+
+        const closeStream = () => {
+          if (!closed) {
+            closed = true;
+            controller.close();
+          }
+        };
+
         const sendChunk = (data: object) => {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+          if (!closed) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+          }
         };
 
         try {
-          // Dynamically load the runtime module
-          const runtimeEntry = path.join(runtimePath, 'dist', 'bridge.js');
-          let runAgent: (goal: string, onChunk: (chunk: object) => void) => Promise<void>;
+          const runtimeEntry = path.join(runtimePath, 'dist', 'dashboard-agent.js');
 
-          try {
-            // Import compiled runtime bridge output
-            const runtime = await import(/* webpackIgnore: true */ runtimeEntry);
-            runAgent = runtime.runAgent || runtime.default?.runAgent;
-          } catch {
-            // If runtime not available, return a helpful message
+          if (!fs.existsSync(runtimeEntry)) {
             sendChunk({
               type: 'text',
-              content: `Agent runtime not found at ${runtimePath}. Please ensure the runtime is built and RUNTIME_PATH is configured correctly.`,
+              content: `Agent runtime dashboard bridge not found at ${runtimeEntry}. Run: cd ${runtimePath} && npm run build`,
             });
-            controller.close();
+            closeStream();
             return;
           }
 
-          if (typeof runAgent !== 'function') {
+          const runtimeEnvPath = path.join(runtimePath, '.env');
+          const runtimeEnvExamplePath = path.join(runtimePath, '.env.example');
+          const requiredRuntimeEnv = ['RPC_URL', 'AGENT_CONTRACT_ADDRESS', 'AGENT_PRIVATE_KEY'];
+          const missingRuntimeEnv = requiredRuntimeEnv.filter((key) => !process.env[key]?.trim());
+
+          if (missingRuntimeEnv.length > 0 && !fs.existsSync(runtimeEnvPath)) {
             sendChunk({
               type: 'error',
-              content: 'Runtime module does not export runAgent function',
+              content: `Runtime config missing: ${runtimeEnvPath}. Create it from ${runtimeEnvExamplePath} and set ${missingRuntimeEnv.join(', ')}.`,
             });
-            controller.close();
+            closeStream();
             return;
           }
 
-          await runAgent(goal, (chunk: object) => {
-            sendChunk(chunk);
-          });
+          await new Promise<void>((resolve) => {
+            const child = spawn(process.execPath, [runtimeEntry, goal], {
+              cwd: runtimePath,
+              env: process.env,
+              stdio: ['ignore', 'pipe', 'pipe'],
+            });
 
-          sendChunk({ type: 'done' });
+            let stdoutBuffer = '';
+            let stderrBuffer = '';
+
+            child.stdout.on('data', (data) => {
+              stdoutBuffer += data.toString();
+              const lines = stdoutBuffer.split('\n');
+              stdoutBuffer = lines.pop() || '';
+
+              for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+                try {
+                  sendChunk(JSON.parse(trimmed));
+                } catch {
+                  sendChunk({ type: 'text', content: trimmed });
+                }
+              }
+            });
+
+            child.stderr.on('data', (data) => {
+              stderrBuffer += data.toString();
+            });
+
+            child.on('error', (error) => {
+              sendChunk({ type: 'error', content: `Failed to start runtime process: ${error.message}` });
+              resolve();
+            });
+
+            child.on('close', (code) => {
+              const trailing = stdoutBuffer.trim();
+              if (trailing) {
+                try {
+                  sendChunk(JSON.parse(trailing));
+                } catch {
+                  sendChunk({ type: 'text', content: trailing });
+                }
+              }
+
+              if (code && code !== 0) {
+                const stderr = stderrBuffer.trim();
+                sendChunk({
+                  type: 'error',
+                  content: stderr || `Runtime process exited with code ${code}`,
+                });
+              }
+
+              resolve();
+            });
+          });
         } catch (error) {
           sendChunk({ type: 'error', content: String(error) });
         } finally {
-          controller.close();
+          closeStream();
         }
       },
     });

@@ -1,1 +1,0 @@
-@modelcontextprotocol/sdk/server

@@ -1,34 +1,98 @@
-# Deploy Your Own AgentWallet
+# Deploy Your Own AgentWallet (Foundry)
 
-## What it does
+This project deploys `AgentWallet` using Foundry script:
 
-`AgentWallet` is a smart contract that acts as a policy-enforced wallet.  
-Your AI agent can only perform actions that the contract allows.
+- `script/Deploy.s.sol`
 
-## Deploy
+---
+
+## 1) Prepare env
 
 ```bash
 cd contracts
 cp .env.example .env
 ```
 
-Fill in `contracts/.env`:
+Edit `.env`:
 
-- `GUARDIAN_ADDRESS=0x...`   ← your wallet (you control the rules)
-- `AGENT_ADDRESS=0x...`      ← the AI agent's address
-- `ETH_TX_LIMIT=0.1`         ← max ETH per transaction
-- `ETH_DAILY_LIMIT=0.5`      ← max ETH per day total
-- `PRIVATE_KEY=0x...`        ← deployer private key
-
-Run deploy:
-
-```bash
-npx hardhat run scripts/deploy.ts --network sepolia
+```env
+AGENT_ADDRESS=0x...         # agent role address
+GUARDIAN_ADDRESS=0x...      # guardian role address
+PRIVATE_KEY=0x...           # deployer private key (funded on Sepolia)
+RPC_URL=https://sepolia.drpc.org
 ```
 
-Copy the deployed address into `runtime/.env` as `AGENT_CONTRACT_ADDRESS`.
+---
 
-## After deploying — whitelist your first address
+## 2) Load env into shell
 
-Before the agent can send ETH, you must whitelist the recipient as guardian.  
-This is done via the dashboard or directly via Etherscan.
+```bash
+set -a
+source .env
+set +a
+```
+
+Verify values are present:
+
+```bash
+echo "RPC_URL=[$RPC_URL]"
+echo "PRIVATE_KEY set? [$([ -n "$PRIVATE_KEY" ] && echo yes || echo no)]"
+echo "AGENT_ADDRESS=[$AGENT_ADDRESS]"
+echo "GUARDIAN_ADDRESS=[$GUARDIAN_ADDRESS]"
+```
+
+Optional RPC check:
+
+```bash
+cast block-number --rpc-url "$RPC_URL"
+```
+
+---
+
+## 3) Deploy
+
+```bash
+forge script script/Deploy.s.sol:DeployScript \
+  --rpc-url "$RPC_URL" \
+  --broadcast \
+  --private-key "$PRIVATE_KEY"
+```
+
+On success, copy from output:
+
+```text
+Contract Address: 0x...
+```
+
+Use that address in `runtime/.env` as:
+
+```env
+AGENT_CONTRACT_ADDRESS=0x...
+```
+
+---
+
+## 4) After deploy
+
+In `runtime/.env`, `AGENT_PRIVATE_KEY` must match the same agent address used in `AGENT_ADDRESS` during deployment.
+
+Then from `runtime/`:
+
+```bash
+npm run build
+npm run setup
+```
+
+---
+
+## Common errors
+
+### Invalid private key
+- Key must be `0x` + 64 hex chars.
+- Don’t pass literal `PRIVATE_KEY`; pass `$PRIVATE_KEY` after sourcing `.env`.
+
+### --rpc-url missing
+- `$RPC_URL` is empty because `.env` was not sourced.
+
+### Provider/RPC rejected request
+- Switch RPC to `https://sepolia.drpc.org` or your own Alchemy endpoint.

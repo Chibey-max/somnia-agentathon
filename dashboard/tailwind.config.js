@@ -40,8 +40,14 @@ module.exports = {
         },
       },
       fontFamily: {
-        mono: ['Geist Mono', 'Fira Code', 'Consolas', 'monospace'],
-        sans: ['Geist Mono', 'Fira Code', 'Consolas', 'monospace'],
+        mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
+        sans: [
+          'var(--font-space-grotesk)',
+          'Space Grotesk',
+          'system-ui',
+          '-apple-system',
+          'sans-serif',
+        ],
       },
       boxShadow: {
         green: '0 0 20px rgba(0, 255, 136, 0.15)',

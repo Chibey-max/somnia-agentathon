@@ -27,7 +27,7 @@ type PendingDirectTransfer = {
   amount: string;
 };
 
-const CHAT_STORAGE_KEY = 'eth-agent-chat-history-v1';
+const CHAT_STORAGE_KEY = 'eth-agent-chat-history-v2';
 
 const defaultWelcomeMessage: Message = {
   id: 'welcome',
@@ -150,17 +150,20 @@ export function AgentChatPanel() {
       return;
     }
 
-    if (/\b(?:my\s+)?(?:eth\s+)?bal(?:ance)?\b/i.test(goal)) {
-      const balance = await publicClient.getBalance({ address: connectedAddress });
-      addMessage({ role: 'agent', content: `Connected wallet ${connectedAddress} balance is ${formatEther(balance)} ETH on Sepolia.` });
+    const addressInGoal = goal.match(/0x[a-fA-F0-9]{40}/);
+    const asksForBalance = /\b(?:check|get|read|show)?\s*(?:the\s+)?(?:eth\s+)?bal(?:ance)?\b/i.test(goal)
+      || /\bbalance\b/i.test(goal);
+
+    if (addressInGoal && asksForBalance) {
+      const target = addressInGoal[0] as `0x${string}`;
+      const balance = await publicClient.getBalance({ address: target });
+      addMessage({ role: 'agent', content: `Address ${target} has ${formatEther(balance)} ETH on Sepolia.` });
       return;
     }
 
-    const addressedBalanceRequest = goal.match(/\b(?:check|get|read|show)?\s*(?:the\s+)?(?:eth\s+)?bal(?:ance)?(?:\s+of|\s+for)?\s*(0x[a-fA-F0-9]{40})\b/i);
-    if (addressedBalanceRequest) {
-      const [, target] = addressedBalanceRequest;
-      const balance = await publicClient.getBalance({ address: target as `0x${string}` });
-      addMessage({ role: 'agent', content: `Address ${target} has ${formatEther(balance)} ETH on Sepolia.` });
+    if (asksForBalance) {
+      const balance = await publicClient.getBalance({ address: connectedAddress });
+      addMessage({ role: 'agent', content: `Connected wallet ${connectedAddress} balance is ${formatEther(balance)} ETH on Sepolia.` });
       return;
     }
 
