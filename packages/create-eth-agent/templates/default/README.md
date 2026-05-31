@@ -18,4 +18,4 @@ npm run setup
 "Send 0.01 ETH to 0x..."
 
 ## Powered by
-eth-agent-kit — github.com/Chibey-max/eth-agent
+eth-agent-kit — github.com/Chibey-max/Ethereum-Agentic

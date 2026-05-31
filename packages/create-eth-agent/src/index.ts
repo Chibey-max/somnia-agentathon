@@ -89,7 +89,7 @@ async function main(): Promise<void> {
   process.stderr.write('  "What is my ETH balance?"\n')
   process.stderr.write('  "What are my spending limits?"\n')
   process.stderr.write('  "Send 0.01 ETH to 0x..."\n\n')
-  process.stderr.write('Docs: github.com/Chibey-max/eth-agent\n')
+  process.stderr.write('Docs: github.com/Chibey-max/Ethereum-Agentic\n')
 }
 
 void main().catch((error: unknown) => {

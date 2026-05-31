@@ -20,7 +20,7 @@ User prompt → MCP Server → AgentWallet.sol → Sepolia
 
 ### Option A — npx (fastest)
 ```bash
-npx create-eth-agent my-agent
+npx create-eth-agent@latest my-agent
 cd my-agent
 cp .env.example .env
 # fill in .env
@@ -31,8 +31,8 @@ npm run setup
 
 ### Option B — Clone the full repo
 ```bash
-git clone https://github.com/Chibey-max/eth-agent
-cd eth-agent/runtime
+git clone https://github.com/Chibey-max/Ethereum-Agentic.git
+cd Ethereum-Agentic/runtime
 cp .env.example .env
 npm install
 npm run build
@@ -103,6 +103,55 @@ eth-agent/
   packages/
     eth-agent-kit/      npm install eth-agent-kit
     create-eth-agent/   npx create-eth-agent
+```
+
+## Package & Monorepo Overview
+
+This repository is an npm workspace monorepo with publishable packages:
+
+- `eth-agent-kit` — SDK for building Ethereum AI agents programmatically
+- `create-eth-agent` — scaffolding CLI used by `npx create-eth-agent`
+
+Published packages:
+
+- `eth-agent-kit` on npm
+- `create-eth-agent@0.1.1` on npm (includes TS config compatibility fix)
+
+## Troubleshooting
+
+### `npm run build` fails in a scaffolded project with `node_modules/ox/...` TypeScript errors
+
+Symptoms include errors like:
+
+- `Property 'replaceAll' does not exist on type 'string'`
+- `Cannot find name 'window'`
+- `AuthenticatorAttestationResponse` / `AuthenticationExtensionsClientOutputs` missing
+
+Cause: an older scaffold template TypeScript config (`target/lib` too old for current `viem`/`ox` types).
+
+Fix:
+
+1. Scaffold with latest CLI:
+
+```bash
+npx create-eth-agent@latest my-agent
+```
+
+2. Or patch `tsconfig.json` in existing generated projects:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"]
+  }
+}
+```
+
+Then re-run:
+
+```bash
+npm run build
 ```
 
 ## Requirements
