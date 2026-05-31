@@ -1,0 +1,29 @@
+{
+  "name": "eth-agent-kit",
+  "version": "0.1.0",
+  "description": "Ethereum AI agent framework with on-chain policy enforcement via AgentWallet",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ethereum", "ai-agent", "mcp", "web3", "solidity",
+    "viem", "sepolia", "agentkit", "autonomous-agent"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "viem": "^2.0.0",
+    "openai": "^4.0.0",
+    "@modelcontextprotocol/sdk": "latest",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "viem": "^2.0.0"
+  }
+}
