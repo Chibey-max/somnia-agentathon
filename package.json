@@ -1,13 +1,20 @@
 {
-  "name": "eth-agent-workspace",
+  "name": "eth-agent",
   "private": true,
+  "workspaces": [
+    "runtime",
+    "dashboard",
+    "contracts",
+    "packages/*"
+  ],
   "scripts": {
-    "mcp": "npm --prefix runtime run -s mcp",
-    "agent": "npm --prefix runtime run agent --",
-    "setup": "npm --prefix runtime run setup",
-    "allow-eth-recipient": "npm --prefix runtime run allow-eth-recipient --",
-    "apply-setup": "npm --prefix runtime run apply-setup",
-    "check-pending": "npm --prefix runtime run check-pending",
-    "build": "npm --prefix runtime run build"
+    "build": "npm run build -w runtime",
+    "setup": "npm run setup -w runtime",
+    "dev": "npm run dev -w dashboard",
+    "publish:kit": "npm run publish -w packages/eth-agent-kit",
+    "publish:cli": "npm run publish -w packages/create-eth-agent"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
   }
 }
