@@ -4,6 +4,36 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprot
 import { executeToolCall } from "./executor"
 import { runtimeTools, toolMap, type ToolName } from "./tools"
 
+async function tryStartKitServer(): Promise<boolean> {
+  try {
+    // Optional local workspace integration with eth-agent-kit
+    const kit = await import("eth-agent-kit")
+    const contractAddress = process.env.AGENT_CONTRACT_ADDRESS as `0x${string}` | undefined
+    const privateKey = process.env.AGENT_PRIVATE_KEY as `0x${string}` | undefined
+    const rpcUrl = process.env.RPC_URL ?? process.env.ALCHEMY_RPC_URL
+
+    if (!contractAddress || !privateKey || !rpcUrl) {
+      return false
+    }
+
+    const agent = new kit.ETHAgent({
+      contractAddress,
+      privateKey,
+      rpcUrl,
+      groqApiKey: process.env.GROQ_API_KEY,
+      openRouterApiKey: process.env.OPENROUTER_API_KEY,
+      googleApiKey: process.env.GOOGLE_API_KEY,
+      chainId: process.env.CHAIN_ID ? Number(process.env.CHAIN_ID) : 11155111,
+      guardianAddress: process.env.GUARDIAN_ADDRESS
+    })
+
+    await agent.startMCPServer()
+    return true
+  } catch {
+    return false
+  }
+}
+
 function toJsonText(value: unknown): string {
   if (typeof value === "string") return value
   try {
@@ -112,4 +142,9 @@ process.on("SIGINT", () => {
   void shutdown("SIGINT")
 })
 
-void main()
+void (async () => {
+  const started = await tryStartKitServer()
+  if (!started) {
+    await main()
+  }
+})()
