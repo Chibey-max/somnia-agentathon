@@ -1,10 +1,20 @@
 # eth-agent-kit
 
 Ethereum AI agent framework. Connect an AI assistant to an
-AgentWallet smart contract with enforced spending limits.
+`AgentWallet` smart contract with enforced spending limits.
 
 ## Install
+
+```bash
 npm install eth-agent-kit
+```
+
+## Features
+
+- On-chain policy-enforced ETH/token execution via `AgentWallet`
+- AI provider fallback support (Groq, OpenRouter, Google)
+- Direct SDK calls (`run`, `transferETH`, `getState`, `preflight`)
+- MCP server startup for IDE integration (`startMCPServer`)
 
 ## Usage
 

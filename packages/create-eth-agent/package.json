@@ -1,19 +1,30 @@
 {
   "name": "create-eth-agent",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Create an Ethereum AI agent project in seconds",
   "main": "./dist/index.js",
   "bin": {
     "create-eth-agent": "./dist/index.js"
   },
-  "files": ["dist", "templates"],
+  "files": [
+    "dist",
+    "templates"
+  ],
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "ethereum", "ai-agent", "mcp", "create", "scaffold",
-    "web3", "solidity", "cursor", "kiro", "claude"
+    "ethereum",
+    "ai-agent",
+    "mcp",
+    "create",
+    "scaffold",
+    "web3",
+    "solidity",
+    "cursor",
+    "kiro",
+    "claude"
   ],
   "license": "MIT",
   "devDependencies": {
