@@ -93,6 +93,17 @@ AgentWallet enforces all agent actions on-chain:
 
 Deploy your own: see contracts/README.md
 
+## T3N Identity Layer
+
+ETH Agent integrates with Terminal 3 Network for verifiable agent identity:
+
+- Each agent session opens an encrypted TEE session via T3N SDK
+- The AgentWallet address is registered as a `did:t3n` decentralized identifier  
+- Every agent action is backed by a cryptographic audit trail on the T3N ledger
+- Compatible with A2A, ERC-8004, and MCP protocols
+
+**Setup:** Add `T3N_API_KEY=your_key` to your `.env` to activate identity layer.
+
 ## Project Structure
 
 ```text

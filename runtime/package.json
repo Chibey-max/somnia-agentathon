@@ -33,14 +33,15 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "latest",
+    "@terminal3/t3n-sdk": "^3.4.2",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
+    "eth-agent-kit": "*",
     "express": "^4.18.0",
     "openai": "^4.104.0",
     "permissionless": "^0.1.49",
     "uuid": "^9.0.0",
     "viem": "^2.17.11",
-    "zod": "^3.22.0",
-    "eth-agent-kit": "*"
+    "zod": "^3.22.0"
   }
 }
