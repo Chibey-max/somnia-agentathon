@@ -93,16 +93,37 @@ AgentWallet enforces all agent actions on-chain:
 
 Deploy your own: see contracts/README.md
 
-## T3N Identity Layer
+## T3N Verifiable Identity Layer
 
-ETH Agent integrates with Terminal 3 Network for verifiable agent identity:
+ETH Agent integrates with Terminal 3 Network for
+cryptographically verifiable agent identity.
 
-- Each agent session opens an encrypted TEE session via T3N SDK
-- The AgentWallet address is registered as a `did:t3n` decentralized identifier  
-- Every agent action is backed by a cryptographic audit trail on the T3N ledger
+Every agent session:
+- Opens an encrypted TEE (Trusted Execution Environment)
+  session via T3N SDK
+- Receives a `did:t3n` decentralized identifier linked to
+  the AgentWallet address
+- Logs every action to an immutable audit trail on the
+  T3N ledger
 - Compatible with A2A, ERC-8004, and MCP protocols
 
-**Setup:** Add `T3N_API_KEY=your_key` to your `.env` to activate identity layer.
+**Setup:**
+Get your free API key at https://terminal3.io/claim-page
+
+Add to your `.env`:
+```
+T3N_API_KEY=your_key_here
+```
+
+On agent startup you will see:
+```
+✅ T3N Identity active
+   Address : 0x...
+   Credits : 20000
+```
+
+If `T3N_API_KEY` is not set the agent runs normally
+without the identity layer.
 
 ## Project Structure
 
@@ -126,7 +147,7 @@ This repository is an npm workspace monorepo with publishable packages:
 Published packages:
 
 - `eth-agent-kit` on npm
-- `create-eth-agent@0.1.1` on npm (includes TS config compatibility fix)
+- `create-eth-agent@0.1.4` on npm (includes TS config compatibility fix)
 
 ## Troubleshooting
 
