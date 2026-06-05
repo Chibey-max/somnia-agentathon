@@ -16,6 +16,15 @@ function copyDirRecursive(src: string, dest: string): void {
   }
 }
 
+function listTopLevelFolders(dir: string): string[] {
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((name) => name !== 'node_modules')
+    .sort()
+}
+
 async function ask(question: string): Promise<string> {
   const rl = readline.createInterface({ input: process.stdin, output: process.stderr })
   const answer = await rl.question(question)
@@ -59,13 +68,14 @@ async function main(): Promise<void> {
 
   // Local workspace fallback so scaffolding works before npm publish.
   const localKitPath = path.resolve(cwd, 'packages/eth-agent-kit')
-  if (fs.existsSync(localKitPath)) {
-    const parsed = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {
+  const runtimePkgPath = path.join(targetDir, 'runtime/package.json')
+  if (fs.existsSync(localKitPath) && fs.existsSync(runtimePkgPath)) {
+    const parsed = JSON.parse(fs.readFileSync(runtimePkgPath, 'utf8')) as {
       dependencies?: Record<string, string>
     }
     parsed.dependencies = parsed.dependencies ?? {}
-    parsed.dependencies['eth-agent-kit'] = `file:${path.relative(targetDir, localKitPath)}`
-    fs.writeFileSync(pkgPath, JSON.stringify(parsed, null, 2))
+    parsed.dependencies['eth-agent-kit'] = `file:${path.relative(path.dirname(runtimePkgPath), localKitPath)}`
+    fs.writeFileSync(runtimePkgPath, JSON.stringify(parsed, null, 2))
   }
 
   process.stderr.write('Installing dependencies...\n')
@@ -75,9 +85,16 @@ async function main(): Promise<void> {
     process.exit(1)
   }
 
+  const createdFolders = listTopLevelFolders(targetDir)
+
   process.stderr.write(`\n✅ ${projectName} is ready!\n\n`)
+  process.stderr.write('Created folders:\n')
+  for (const folder of createdFolders) {
+    process.stderr.write(`  - ${folder}/\n`)
+  }
+  process.stderr.write('\n')
   process.stderr.write(`cd ${projectName}\n\n`)
-  process.stderr.write('Fill in .env:\n')
+  process.stderr.write('Fill in runtime/.env:\n')
   process.stderr.write('  AGENT_CONTRACT_ADDRESS=   deployed AgentWallet address\n')
   process.stderr.write('  AGENT_PRIVATE_KEY=        agent role private key\n')
   process.stderr.write('  RPC_URL=                  https://rpc.ankr.com/eth_sepolia\n')

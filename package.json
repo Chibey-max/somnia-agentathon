@@ -10,6 +10,7 @@
   "scripts": {
     "build": "npm run build -w runtime",
     "setup": "npm run setup -w runtime",
+    "mcp": "npm --prefix runtime run -s mcp",
     "dev": "npm run dev -w dashboard",
     "publish:kit": "npm run publish -w packages/eth-agent-kit",
     "publish:cli": "npm run publish -w packages/create-eth-agent"

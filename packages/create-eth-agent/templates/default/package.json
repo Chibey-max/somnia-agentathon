@@ -1,20 +1,20 @@
 {
   "name": "eth-agent-template",
-  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "runtime",
+    "dashboard"
+  ],
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/mcp-server.js",
-    "dev": "ts-node src/mcp-server.ts",
-    "setup": "ts-node scripts/setup.ts"
-  },
-  "dependencies": {
-    "eth-agent-kit": "latest",
-    "dotenv": "^16.6.1",
-    "viem": "^2.17.11"
+    "build": "npm run build -w runtime",
+    "setup": "npm run setup -w runtime",
+    "agent": "npm run agent -w runtime",
+    "mcp": "npm run mcp -w runtime",
+    "mcp:web": "npm run mcp:web -w runtime",
+    "dashboard": "npm run dev -w dashboard",
+    "dev": "npm run dev -w dashboard"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "ts-node": "^10.0.0",
-    "@types/node": "^20.0.0"
+    "concurrently": "^8.0.0"
   }
 }

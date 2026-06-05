@@ -3,20 +3,31 @@ export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ||
 
 export const CHAIN_ID = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || '11155111');
 
-export const ALCHEMY_RPC_URL =
-  process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL ||
-  'https://eth-sepolia.g.alchemy.com/v2/demo';
+const splitRpcUrls = (value?: string) =>
+  (value || '')
+    .split(',')
+    .map((url) => url.trim())
+    .filter(Boolean);
 
-export const ANKR_RPC_URL =
-  process.env.NEXT_PUBLIC_ANKR_RPC_URL ||
-  'https://rpc.ankr.com/eth_sepolia/1092ec888da7f98c638afd3663c60205e2bbf66b293de56abcc22904bf2213ed';
+export const ALCHEMY_RPC_URL = process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL || '';
 
-export const QUICKNODE_RPC_URL =
-  process.env.NEXT_PUBLIC_QUICKNODE_RPC_URL ||
-  '';
+export const ANKR_RPC_URL = process.env.NEXT_PUBLIC_ANKR_RPC_URL || '';
+
+export const QUICKNODE_RPC_URL = process.env.NEXT_PUBLIC_QUICKNODE_RPC_URL || '';
+
+const SERVER_RPC_URLS = splitRpcUrls(process.env.RPC_URLS || process.env.RPC_URL);
+const PUBLIC_RPC_URLS = splitRpcUrls(process.env.NEXT_PUBLIC_RPC_URLS);
 
 export const RPC_URLS = Array.from(
-  new Set([ALCHEMY_RPC_URL, ANKR_RPC_URL, QUICKNODE_RPC_URL].filter(Boolean))
+  new Set([
+    ...SERVER_RPC_URLS,
+    ...PUBLIC_RPC_URLS,
+    ALCHEMY_RPC_URL,
+    ANKR_RPC_URL,
+    QUICKNODE_RPC_URL,
+    'https://eth-sepolia.g.alchemy.com/v2/demo',
+    'https://sepolia.drpc.org',
+  ].filter(Boolean))
 );
 
 export const GUARDIAN_ADDRESS = (process.env.NEXT_PUBLIC_GUARDIAN_ADDRESS ||

@@ -275,10 +275,16 @@ export async function GET(req: NextRequest) {
       scanCursor: scanCursor?.toString() ?? null,
     });
   } catch (error) {
-    console.error('[/api/events]', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch events', details: String(error) },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[/api/events]", message);
+    return NextResponse.json({
+      events: [],
+      latestBlock: cacheHeadBlock?.toString() ?? null,
+      partial: true,
+      chunksScanned: 0,
+      scanCursor: scanCursor?.toString() ?? null,
+      rpcUnavailable: true,
+      error: message,
+    });
   }
 }

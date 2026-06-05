@@ -10,6 +10,36 @@ const CACHE_TTL_MS = 10_000;
 let cache: { data: unknown; expiresAt: number } | null = null;
 let inflight: Promise<unknown> | null = null;
 
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function unavailableContractState(error: unknown) {
+  return {
+    address: CONTRACT_ADDRESS,
+    balance: "0",
+    balanceFormatted: "0",
+    agent: "0x0000000000000000000000000000000000000000",
+    guardian: "0x0000000000000000000000000000000000000000",
+    pendingAgent: "0x0000000000000000000000000000000000000000",
+    pendingGuardian: "0x0000000000000000000000000000000000000000",
+    paused: false,
+    ethTxLimit: "0",
+    ethDailyLimit: "0",
+    ethDailySpent: "0",
+    ethTxLimitFormatted: "0",
+    ethDailyLimitFormatted: "0",
+    ethDailySpentFormatted: "0",
+    dailySpentPercent: 0,
+    pendingLimitChange: null,
+    pendingCall: null,
+    network: "Sepolia",
+    chainId: 11155111,
+    rpcUnavailable: true,
+    error: errorMessage(error),
+  };
+}
+
 async function readContractState() {
   const clients = RPC_URLS.map((url) =>
     createPublicClient({
@@ -30,31 +60,17 @@ async function readContractState() {
     throw lastError ?? new Error('All RPC providers failed');
   };
 
-  const [
-    balance,
-    agent,
-    guardian,
-    pendingAgent,
-    pendingGuardian,
-    paused,
-    ethTxLimit,
-    ethDailyLimit,
-    ethDailySpent,
-    pendingLimitChangeRaw,
-    pendingCallRaw,
-  ] = await Promise.all([
-    withFallback((client) => client.getBalance({ address: CONTRACT_ADDRESS })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'agent' })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'guardian' })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'pendingAgent' })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'pendingGuardian' })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'paused' })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'ethTxLimit' })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'ethDailyLimit' })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'ethDailySpent' })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'pendingLimitChange' })),
-    withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: 'pendingCall' })),
-  ]);
+  const balance = await withFallback((client) => client.getBalance({ address: CONTRACT_ADDRESS }));
+  const agent = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "agent" }));
+  const guardian = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "guardian" }));
+  const pendingAgent = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "pendingAgent" }));
+  const pendingGuardian = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "pendingGuardian" }));
+  const paused = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "paused" }));
+  const ethTxLimit = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "ethTxLimit" }));
+  const ethDailyLimit = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "ethDailyLimit" }));
+  const ethDailySpent = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "ethDailySpent" }));
+  const pendingLimitChangeRaw = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "pendingLimitChange" }));
+  const pendingCallRaw = await withFallback((client) => client.readContract({ address: CONTRACT_ADDRESS, abi: AGENT_WALLET_ABI, functionName: "pendingCall" }));
 
   const [plcTxLimit, plcDailyLimit, plcUnlockTime, plcQueued] = pendingLimitChangeRaw as [bigint, bigint, bigint, boolean];
   const [pcTarget, pcSelector, pcCheckRecipient, pcCheckAmount, pcMaxAmount, pcUnlockTime, pcQueued] = pendingCallRaw as [string, string, boolean, boolean, bigint, bigint, boolean];
@@ -124,11 +140,11 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('[/api/contract]', error);
-    return NextResponse.json(
-      { error: 'Failed to read contract state', details: String(error) },
-      { status: 500 }
-    );
+    console.error("[/api/contract]", errorMessage(error));
+    if (cache) {
+      return NextResponse.json({ ...(cache.data as Record<string, unknown>), stale: true, rpcUnavailable: true });
+    }
+    return NextResponse.json(unavailableContractState(error));
   } finally {
     inflight = null;
   }
