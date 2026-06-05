@@ -125,6 +125,30 @@ On agent startup you will see:
 If `T3N_API_KEY` is not set the agent runs normally
 without the identity layer.
 
+## Platform Integrations
+
+- **MCP** — Cursor, VS Code, Kiro, Claude Desktop, Zed
+- **Anna Platform** — Executa plugin via `anna-executa/`
+- **Terminal 3 Network** — TEE-backed verifiable identity
+
+### Anna Executa Plugin
+Run ETH Agent as an Anna platform plugin:
+```bash
+node anna-executa/index.js
+```
+Test:
+```bash
+echo '{"jsonrpc":"2.0","method":"describe","id":1}' | node anna-executa/index.js
+```
+
+## Roadmap
+- [ ] Multi-chain support (Base, Arbitrum, Optimism)
+- [ ] Role-based agent teams (treasury, HR, ops)
+- [ ] Visual policy builder — no-code limit configuration
+- [ ] Telegram/Slack bot interface
+- [ ] Audit trail export for compliance
+- [ ] Anna App Store listing
+
 ## Project Structure
 
 ```text
