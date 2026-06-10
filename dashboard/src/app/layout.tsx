@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, Orbitron, JetBrains_Mono } from 'next/font/google';
-import '@rainbow-me/rainbowkit/styles.css';
 import './globals.css';
 import { Providers } from '@/components/shared/Providers';
 import { Navbar } from '@/components/shared/Navbar';

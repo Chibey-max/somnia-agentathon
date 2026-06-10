@@ -2,7 +2,6 @@
 
 import { useAccount, useBalance } from 'wagmi';
 import { ShieldCheck, Timer } from 'lucide-react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { CONTRACT_ADDRESS } from '@/lib/contract';
 import { formatEther } from 'viem';
 
@@ -41,7 +40,9 @@ export function Navbar() {
               {parseFloat(formatEther(balance.value)).toFixed(4)} STT
             </span>
           )}
-          <ConnectButton chainStatus="icon" showBalance={false} accountStatus={{ smallScreen: 'avatar', largeScreen: 'full' }} />
+          <span className="font-mono text-xs text-green border border-green/40 rounded px-3 py-1.5">
+            {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Somnia Testnet'}
+          </span>
         </div>
       </div>
 
