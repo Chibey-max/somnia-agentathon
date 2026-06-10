@@ -1,0 +1,241 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Variables ─────────────────────────────────────────────────────────── */
+:root {
+  --color-bg: #0a0a0f;
+  --color-bg-secondary: #0d0d1a;
+  --color-card: #111118;
+  --color-card-hover: #15151f;
+  --color-border: rgba(0, 212, 170, 0.12);
+  --color-border-strong: rgba(0, 212, 170, 0.25);
+  --color-green: #00d4aa;
+  --color-green-dim: rgba(0, 212, 170, 0.6);
+  --color-green-glow: rgba(0, 212, 170, 0.15);
+  --color-purple: #7c3aed;
+  --color-purple-glow: rgba(124, 58, 237, 0.2);
+  --color-red: #ef4444;
+  --color-yellow: #f59e0b;
+  --color-text-primary: #f0f0f5;
+  --color-text-secondary: #8888aa;
+  --color-text-muted: #555577;
+  --glow-green: 0 0 20px rgba(0, 212, 170, 0.3);
+  --glow-green-strong: 0 0 40px rgba(0, 212, 170, 0.5), 0 0 80px rgba(0, 212, 170, 0.15);
+  --glow-purple: 0 0 20px rgba(124, 58, 237, 0.4);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── Custom Scrollbar ───────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-card);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-green-dim);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-green);
+}
+
+/* ─── Animated Gradient Backgrounds ─────────────────────────────────────────── */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0, 212, 170, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(0, 212, 170, 0.6), 0 0 60px rgba(0, 212, 170, 0.2); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ─── Utility Classes ────────────────────────────────────────────────────────── */
+.glow-green {
+  box-shadow: var(--glow-green);
+}
+
+.glow-green-strong {
+  box-shadow: var(--glow-green-strong);
+}
+
+.glow-purple {
+  box-shadow: var(--glow-purple);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 20px rgba(0, 212, 170, 0.6);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 20px rgba(124, 58, 237, 0.6);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-green) 0%, #00a8ff 50%, var(--color-purple) 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-panel {
+  background: rgba(17, 17, 24, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+}
+
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: 0 0 20px rgba(0, 212, 170, 0.08);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-green);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--color-green);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-card) 25%,
+    rgba(255, 255, 255, 0.05) 50%,
+    var(--color-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.terminal-text {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  color: var(--color-green);
+  letter-spacing: 0.02em;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.status-badge.live {
+  background: rgba(0, 212, 170, 0.1);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  color: var(--color-green);
+}
+
+.status-badge.warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.status-badge.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+/* ─── Pulse Animation for Live Data ─────────────────────────────────────────── */
+.pulse-green {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ─── Grid Background ────────────────────────────────────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 212, 170, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 170, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ─── Chart Overrides ────────────────────────────────────────────────────────── */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.05) !important;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+}

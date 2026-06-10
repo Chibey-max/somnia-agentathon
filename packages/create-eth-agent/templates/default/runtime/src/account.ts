@@ -1,17 +1,16 @@
 import { privateKeyToAccount } from "viem/accounts"
 import { createPublicClient, createWalletClient, fallback, http } from "viem"
-import { sepolia } from "viem/chains"
+import { somniaTestnet } from "./chain"
 import { getChainId, getRpcUrl, requirePrivateKey } from "./env"
 
 const chainId = getChainId()
-if (chainId !== sepolia.id) {
-  throw new Error(`Unsupported CHAIN_ID=${chainId}. This runtime currently supports Sepolia only (${sepolia.id}).`)
+if (chainId !== somniaTestnet.id) {
+  throw new Error(`Unsupported CHAIN_ID=${chainId}. Expected Somnia Testnet (${somniaTestnet.id}).`)
 }
 
 const PRIMARY_RPC = getRpcUrl()
 const FALLBACK_RPCS = [
-  "https://rpc.ankr.com/eth_sepolia",
-  "https://sepolia.drpc.org"
+  "https://dream-rpc.somnia.network",
 ]
 
 function uniqueRpcUrls(urls: string[]): string[] {
@@ -31,7 +30,7 @@ const transport = fallback(
 )
 
 export const publicClient = createPublicClient({
-  chain: sepolia,
+  chain: somniaTestnet,
   transport
 })
 
@@ -39,10 +38,10 @@ export const agentAccount = privateKeyToAccount(requirePrivateKey("AGENT_PRIVATE
 
 export const walletClient = createWalletClient({
   account: agentAccount,
-  chain: sepolia,
+  chain: somniaTestnet,
   transport
 })
 
 export function getExplorerTxUrl(txHash: `0x${string}`): string {
-  return `https://sepolia.etherscan.io/tx/${txHash}`
+  return `https://shannon-explorer.somnia.network/tx/${txHash}`
 }

@@ -35,22 +35,22 @@ export default function DashboardPage() {
       {/* Footer */}
       <div className="border-t border-border pt-4 pb-8 flex items-center justify-between text-text-muted text-xs font-mono">
         <div className="flex items-center gap-4">
-          <span>ETH Agent Dashboard</span>
+          <span>Somnia Agent Dashboard</span>
           <span className="text-border-bright">|</span>
           <span>AgentWallet v1</span>
           <span className="text-border-bright">|</span>
           <a
-            href="https://sepolia.etherscan.io/address/0xE49A6044D47De19504B73aA36F31899843B05259"
+            href={`https://shannon-explorer.somnia.network/address/${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || ''}`}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-blue-bright transition-colors"
           >
-            0xE49A...5259 ↗
+            Contract ↗
           </a>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
-          <span>Sepolia Testnet</span>
+          <span>Somnia Testnet</span>
         </div>
       </div>
     </div>

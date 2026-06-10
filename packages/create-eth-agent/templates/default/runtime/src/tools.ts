@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { isAddress } from "viem"
 
-const addressSchema = z.string().refine((v) => isAddress(v), "Invalid Ethereum address")
+const addressSchema = z.string().refine((v) => isAddress(v), "Invalid Somnia address")
 const hexSchema = z.string().regex(/^0x[0-9a-fA-F]*$/, "Must be a hex string")
 
 export type ToolName =
@@ -25,19 +25,19 @@ export const runtimeTools: RuntimeToolDefinition[] = [
   {
     name: "get_wallet_state",
     description:
-      "Read the current AgentWallet state: ETH balance, pause status, agent role address, guardian role address, per-transaction ETH limit, daily ETH limit, and ETH spent today.",
+      "Read the current AgentWallet state: STT balance, pause status, agent role address, guardian role address, per-transaction native limit, daily native limit, and native amount spent today.",
     inputSchema: { type: "object", properties: {}, required: [] },
     schema: z.object({}).strict()
   },
   {
     name: "transfer_eth",
     description:
-      "Send ETH from AgentWallet to a recipient. Use this only when user explicitly asks to transfer ETH. Enforces on-chain policy checks including pause state, per-tx limit, daily limit, and whitelist.",
+      "Send STT from AgentWallet to a recipient. Use this only when user explicitly asks to transfer STT. Enforces on-chain policy checks including pause state, per-tx limit, daily limit, and whitelist.",
     inputSchema: {
       type: "object",
       properties: {
         to: { type: "string", description: "Recipient address (0x...)" },
-        amount: { type: "string", description: "Amount in ETH as decimal string, e.g. '0.001'" }
+        amount: { type: "string", description: "Amount in STT as decimal string, e.g. '0.001'" }
       },
       required: ["to", "amount"]
     },
@@ -82,7 +82,7 @@ export const runtimeTools: RuntimeToolDefinition[] = [
   {
     name: "check_limits",
     description:
-      "Read ETH spending guardrails and remaining allowance from AgentWallet: per-tx ETH limit, daily ETH limit, spent today, and remaining daily allowance.",
+      "Read STT spending guardrails and remaining allowance from AgentWallet: per-tx native limit, daily native limit, spent today, and remaining daily allowance.",
     inputSchema: { type: "object", properties: {}, required: [] },
     schema: z.object({}).strict()
   },
@@ -94,7 +94,7 @@ export const runtimeTools: RuntimeToolDefinition[] = [
       type: "object",
       properties: {
         target: { type: "string", description: "Target contract or recipient address" },
-        selector: { type: "string", description: "4-byte selector hex, e.g. 0xa9059cbb. Use 0x00000000 for raw ETH transfer." },
+        selector: { type: "string", description: "4-byte selector hex, e.g. 0xa9059cbb. Use 0x00000000 for raw STT transfer." },
         recipient: { type: "string", description: "Optional recipient to validate recipient policy where applicable" },
         amount: { type: "string", description: "Optional amount in wei to validate amount policy where applicable" }
       },
@@ -112,7 +112,7 @@ export const runtimeTools: RuntimeToolDefinition[] = [
   {
     name: "get_pending_actions",
     description:
-      "Read pending queued wallet actions that are timelocked: pending call policy changes and pending ETH limit changes, including unlock countdown.",
+      "Read pending queued wallet actions that are timelocked: pending call policy changes and pending native-token limit changes, including unlock countdown.",
     inputSchema: { type: "object", properties: {}, required: [] },
     schema: z.object({}).strict()
   },

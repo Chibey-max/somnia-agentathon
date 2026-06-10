@@ -8,12 +8,21 @@ import {
   rainbowWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
-import { fallback, http } from 'viem';
-import { sepolia } from 'wagmi/chains';
+import { defineChain, fallback, http } from 'viem';
 import { RPC_URLS } from './contract';
 
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID?.trim();
 const hasWalletConnectProjectId = Boolean(walletConnectProjectId && !/^0+$/.test(walletConnectProjectId));
+
+export const somniaTestnet = defineChain({
+  id: 50312,
+  name: 'Somnia Testnet',
+  nativeCurrency: { name: 'Somnia Token', symbol: 'STT', decimals: 18 },
+  rpcUrls: { default: { http: ['https://dream-rpc.somnia.network'] } },
+  blockExplorers: {
+    default: { name: 'Somnia Explorer', url: 'https://shannon-explorer.somnia.network' },
+  },
+});
 
 const popularWallets = [
   metaMaskWallet,
@@ -23,11 +32,11 @@ const popularWallets = [
 ];
 
 export const wagmiConfig = getDefaultConfig({
-  appName: 'ETH Agent Dashboard',
-  projectId: walletConnectProjectId || 'eth-agent-local-dev',
-  chains: [sepolia],
+  appName: 'Somnia Agent Dashboard',
+  projectId: walletConnectProjectId || 'somnia-agent-local-dev',
+  chains: [somniaTestnet],
   transports: {
-    [sepolia.id]: fallback(RPC_URLS.map((url) => http(url))),
+    [somniaTestnet.id]: fallback(RPC_URLS.map((url) => http(url))),
   },
   wallets: [
     {

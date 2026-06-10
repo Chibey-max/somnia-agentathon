@@ -1,0 +1,28 @@
+{
+  "name": "mantle-dashboard",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start -p 3002"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18",
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10",
+    "postcss": "^8",
+    "framer-motion": "^11.0.0",
+    "recharts": "^2.12.0",
+    "lucide-react": "^0.400.0",
+    "wagmi": "^2.0.0",
+    "viem": "^2.17.11",
+    "@tanstack/react-query": "^5.0.0",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.6.0"
+  }
+}

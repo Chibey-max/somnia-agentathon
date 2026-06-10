@@ -4,7 +4,7 @@ import * as dotenv from "dotenv"
 const envPath = path.resolve(__dirname, "../.env")
 dotenv.config({ path: envPath, override: false })
 
-export const DEFAULT_CHAIN_ID = 11155111
+export const DEFAULT_CHAIN_ID = 50312
 
 function normalize(name: string, value?: string): string | undefined {
   const v = value?.trim()

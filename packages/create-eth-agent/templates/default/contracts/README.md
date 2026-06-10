@@ -18,8 +18,8 @@ Edit `.env`:
 ```env
 AGENT_ADDRESS=0x...         # agent role address
 GUARDIAN_ADDRESS=0x...      # guardian role address
-PRIVATE_KEY=0x...           # deployer private key (funded on Sepolia)
-RPC_URL=https://sepolia.drpc.org
+PRIVATE_KEY=0x...           # deployer private key (funded on Somnia Testnet)
+RPC_URL=https://dream-rpc.somnia.network
 ```
 
 ---
@@ -95,4 +95,4 @@ npm run setup
 - `$RPC_URL` is empty because `.env` was not sourced.
 
 ### Provider/RPC rejected request
-- Switch RPC to `https://sepolia.drpc.org` or your own Alchemy endpoint.
+- Use the Somnia Testnet RPC: `https://dream-rpc.somnia.network`.

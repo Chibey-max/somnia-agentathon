@@ -1,13 +1,13 @@
-# ETH Agent Dashboard
+# Somnia Agent Dashboard
 
-Full-stack dashboard for the **AgentWallet** smart contract deployed on Ethereum Sepolia testnet.
+Full-stack dashboard for the **AgentWallet** smart contract deployed on Somnia Testnet.
 
 ## Contract Details
 
 | Field | Value |
 |---|---|
 | Contract | `0xE49A6044D47De19504B73aA36F31899843B05259` |
-| Network | Ethereum Sepolia (chainId: 11155111) |
+| Network | Somnia Testnet (chainId: 50312) |
 | Guardian | `0xd9100b701e21fC578BFD937AC2DbDfb5bbD42572` |
 
 ## Stack
@@ -28,7 +28,7 @@ npm install
 # 2. Configure environment
 cp .env.local.example .env.local
 # Edit .env.local:
-#   NEXT_PUBLIC_ALCHEMY_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
+#   NEXT_PUBLIC_RPC_URLS=https://dream-rpc.somnia.network
 
 # 3. Run dev server
 npm run dev
@@ -77,9 +77,9 @@ src/
 
 | Panel | Description |
 |---|---|
-| Overview | Contract address, ETH balance, roles, network, pause status |
-| Spending Limits | Per-TX + daily ETH limits, progress bar, pending limit changes |
-| Transaction History | Live `Executed` event feed from Sepolia with Etherscan links |
+| Overview | Contract address, STT balance, roles, network, pause status |
+| Spending Limits | Per-TX + daily STT limits, progress bar, pending limit changes |
+| Transaction History | Live `Executed` event feed from Somnia Testnet with explorer links |
 | Whitelist Manager | Queue/apply/cancel call policy with 10min timelock |
 | Token Policy | ERC-20 daily limits, spend tracking, guardian set/revoke |
 | Agent Chat | Stream goals to runtime, see tool calls + tx hashes |

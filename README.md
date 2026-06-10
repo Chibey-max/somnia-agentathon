@@ -1,65 +1,135 @@
-# ETH Agent
+# Somnia Agent Kit
 
-> Autonomous Ethereum AI agent framework for EVM chains.
-> Like Starknet Agent Kit, but for Ethereum.
-> Connect your AI assistant to an on-chain wallet with
-> enforced spending limits, whitelisting, and guardian controls.
+> **The first autonomous AI agent framework for Somnia's Agentic L1.**
+> Policy-enforced, guardian-controlled, MCP-native — built for the Somnia Agentathon.
 
-## How it works
+**Hackathon:** Somnia Agentathon — Encode Club  
+**Deadline:** June 11, 2026  
+
+---
+
+## What Is This?
+
+Somnia Agent Kit is a chain-agnostic autonomous AI agent framework ported to Somnia's EVM-compatible Agentic L1. An AI agent (powered by Groq/OpenRouter/Gemini) connects to an on-chain `AgentWallet.sol` contract via an MCP server, and can autonomously execute transactions — all constrained by on-chain spending limits, address whitelisting, and a guardian kill-switch.
+
+```
+User prompt → MCP Server → SomniaAgent → AgentWallet.sol → Somnia Testnet
+                                              ↑
+                                    enforces: spending limits (STT)
+                                              whitelist
+                                              pause/unpause
+                                              daily limits
+                                              timelocked queues
+```
+
+---
+
+## Architecture
 
 ```text
-User prompt → MCP Server → AgentWallet.sol → Sepolia
-                              ↑
-                    enforces: spending limits
-                              whitelist
-                              pause/unpause
-                              daily limits
+somnia-agent-kit/
+  contracts/              AgentWallet.sol + Somnia deploy scripts
+  runtime/                MCP server + AI agent loop (viem, chain-agnostic)
+  dashboard/              Next.js web UI (Somnia Testnet)
+  somnia/                 Somnia integration layer
+    agent/somniaAgent.ts  Agent entry point for Somnia
+    contracts/deploy-somnia.sh
+    skills/agentWalletSkill.ts
+    README.md
+  mantle/                 Mantle Turing Test Hackathon (separate submission)
+  packages/
+    create-somnia-agent/  CLI scaffold tool
 ```
 
-## Quickstart
+---
 
-### Option A — npx (fastest)
-```bash
-npx create-eth-agent@latest my-agent
-cd my-agent
-cp .env.example .env
-# fill in .env
-npm run build
-npm run setup
-# restart your IDE
+## Deployed Contract
+
+```
+AGENT_WALLET_ADDRESS=<deployed on Somnia Testnet>
 ```
 
-### Option B — Clone the full repo
+> Fill this in after running the deploy script below.
+
+---
+
+## Demo Video
+
+> [Insert 2–5 min demo link here showing the agent autonomously executing on-chain actions on Somnia]
+
+---
+
+## How to Run Locally
+
+### Prerequisites
+- Node.js 20+
+- Foundry (`curl -L https://foundry.paradigm.xyz | bash`)
+- A funded Somnia Testnet wallet (get STT from the Somnia faucet)
+- At least one LLM API key (Groq recommended — free at console.groq.com)
+
+### 1. Clone & install
+
 ```bash
-git clone https://github.com/Chibey-max/Ethereum-Agentic.git
-cd Ethereum-Agentic/runtime
-cp .env.example .env
+git clone https://github.com/Chibey-max/somnia-agentathon.git
+cd somnia-agentathon
 npm install
+```
+
+### 2. Deploy AgentWallet on Somnia Testnet
+
+```bash
+cd contracts
+cp .env.example .env
+# fill in AGENT_ADDRESS, GUARDIAN_ADDRESS, PRIVATE_KEY
+
+forge script script/Deploy.s.sol \
+  --rpc-url https://dream-rpc.somnia.network \
+  --broadcast \
+  --chain-id 50312
+```
+
+Copy the deployed contract address into `.env` and `dashboard/.env.local`.
+
+### 3. Configure the runtime
+
+```bash
+cp .env.example .env
+# fill in:
+#   RPC_URL=https://dream-rpc.somnia.network
+#   CHAIN_ID=50312
+#   AGENT_CONTRACT_ADDRESS=<deployed address>
+#   AGENT_PRIVATE_KEY=<agent key>
+#   GROQ_API_KEY=<your key>
+
 npm run build
 npm run setup
 ```
 
-### Option C — npm install (build on top)
-```ts
-npm install eth-agent-kit
+### 4. Start the dashboard
 
-import { ETHAgent } from 'eth-agent-kit'
-const agent = new ETHAgent({ ...config })
-await agent.run('Send 0.01 ETH to 0x...')
+```bash
+cd dashboard
+cp .env.local.example .env.local
+# fill in NEXT_PUBLIC_CONTRACT_ADDRESS, NEXT_PUBLIC_CHAIN_ID=50312
+
+npm run dev
+# open http://localhost:3000
 ```
 
-## MCP Config (manual)
+### 5. Run the Somnia agent loop
 
-Add to your IDE config:
+```bash
+npx ts-node somnia/agent/somniaAgent.ts
+```
 
-Claude Desktop: ~/.config/claude/claude_desktop_config.json
-Cursor:         ~/.cursor/mcp.json
-Kiro:           ~/.kiro/settings/mcp.json
+---
+
+## MCP Config (IDE integration)
 
 ```json
 {
   "mcpServers": {
-    "eth-agent": {
+    "somnia-agent": {
       "command": "node",
       "args": ["/full/path/to/runtime/dist/mcp-server.js"]
     }
@@ -67,155 +137,110 @@ Kiro:           ~/.kiro/settings/mcp.json
 }
 ```
 
-## Available Tools
+Add to: `~/.cursor/mcp.json`, `~/.kiro/settings/mcp.json`, or Claude Desktop config.
+
+---
+
+## Available MCP Tools
 
 | Tool | Description |
 |------|-------------|
-| get_wallet_state | Balance, limits, paused status, roles |
-| transfer_eth | Send ETH to whitelisted address |
-| transfer_token | Send ERC-20 within token policy |
-| check_limits | Remaining daily ETH allowance |
-| get_tx_status | Look up transaction by hash |
-| check_whitelist | Check if address+action is allowed |
-| get_pending_actions | Queued calls with countdown timers |
-| get_transaction_history | Recent on-chain activity |
+| `get_wallet_state` | Balance, limits, paused status, agent/guardian roles |
+| `transfer_eth` | Send STT to a whitelisted address |
+| `transfer_token` | Send ERC-20 within token policy |
+| `check_limits` | Remaining daily STT allowance |
+| `get_tx_status` | Look up transaction by hash |
+| `check_whitelist` | Check if address+selector is allowed |
+| `get_pending_actions` | Queued calls with countdown timers |
+| `get_transaction_history` | Recent on-chain activity |
 
-## Smart Contract
+---
 
-AgentWallet enforces all agent actions on-chain:
-- Per-transaction ETH spending limit
-- Daily ETH spending limit
-- Whitelisted target addresses and function selectors
+## Smart Contract: AgentWallet.sol
+
+All agent actions are enforced on-chain — the MCP server cannot bypass them:
+
+- Per-transaction STT spending limit
+- Daily STT spending limit
+- Whitelisted target addresses + function selectors
 - Token-specific daily limits
 - Guardian pause/unpause kill switch
 - 10-minute timelock on limit increases
-- 2-step role transfers
+- 2-step role transfers (agent + guardian)
+- ReentrancyGuard on all state-changing functions
 
-Deploy your own: see contracts/README.md
+---
 
-## T3N Verifiable Identity Layer
+## Chain Config: Somnia Testnet
 
-ETH Agent integrates with Terminal 3 Network for
-cryptographically verifiable agent identity.
+| Field | Value |
+|-------|-------|
+| Chain ID | `50312` |
+| RPC | `https://dream-rpc.somnia.network` |
+| Native token | `STT` |
+| Block explorer | `https://shannon-explorer.somnia.network` |
 
-Every agent session:
-- Opens an encrypted TEE (Trusted Execution Environment)
-  session via T3N SDK
-- Receives a `did:t3n` decentralized identifier linked to
-  the AgentWallet address
-- Logs every action to an immutable audit trail on the
-  T3N ledger
-- Compatible with A2A, ERC-8004, and MCP protocols
+---
 
-**Setup:**
-Get your free API key at https://terminal3.io/claim-page
+## Judging Criteria
 
-Add to your `.env`:
-```
-T3N_API_KEY=your_key_here
-```
+### Functionality
+The agent runs end-to-end: deployed contract on Somnia Testnet → MCP server → AI agent → on-chain execution. Every tool call is verified against the on-chain policy before broadcast.
 
-On agent startup you will see:
-```
-✅ T3N Identity active
-   Address : 0x...
-   Credits : 20000
-```
+### Agent-First Design
+The MCP server exposes `AgentWallet.sol` as structured tools. The AI agent discovers available actions autonomously and invokes them without hard-coded call sequences. The contract is the policy engine — not the agent's prompt.
 
-If `T3N_API_KEY` is not set the agent runs normally
-without the identity layer.
+### Innovation
+This is the first agent SDK targeting Somnia's Agentic L1. The framework is chain-agnostic: the same `AgentWallet.sol` logic and MCP server work on any EVM chain — Somnia Testnet today, mainnet tomorrow. Includes a Mantle integration as a parallel submission demonstrating multi-chain portability.
 
-## Platform Integrations
+### Autonomous Performance
+The agent executes multi-step on-chain flows without human intervention: read wallet state → check policy → prepare calldata → broadcast → confirm. The guardian role exists only for emergency intervention, not normal operation.
 
-- **MCP** — Cursor, VS Code, Kiro, Claude Desktop, Zed
-- **Anna Platform** — Executa plugin via `anna-executa/`
-- **Terminal 3 Network** — TEE-backed verifiable identity
+---
 
-### Anna Executa Plugin
-Run ETH Agent as an Anna platform plugin:
+## .env.example
+
 ```bash
-node anna-executa/index.js
-```
-Test:
-```bash
-echo '{"jsonrpc":"2.0","method":"describe","id":1}' | node anna-executa/index.js
+RPC_URL=https://dream-rpc.somnia.network
+CHAIN_ID=50312
+NETWORK=somnia_testnet
+CONTRACT_ADDRESS=   # fill after deploy
+AGENT_PRIVATE_KEY=0x
+GUARDIAN_ADDRESS=0x
+GROQ_API_KEY=
+T3N_API_KEY=        # optional — Terminal 3 verifiable identity
 ```
 
-## Roadmap
-- [ ] Multi-chain support (Base, Arbitrum, Optimism)
-- [ ] Role-based agent teams (treasury, HR, ops)
-- [ ] Visual policy builder — no-code limit configuration
-- [ ] Telegram/Slack bot interface
-- [ ] Audit trail export for compliance
-- [ ] Anna App Store listing
+---
 
-## Project Structure
+## Project Structure (full)
 
 ```text
-eth-agent/
-  contracts/            AgentWallet.sol + deploy scripts
-  runtime/              MCP server + AI agent loop
-  dashboard/            Next.js web UI
+somnia-agent-kit/
+  contracts/
+    src/AgentWallet.sol         Two-role guardian/agent wallet
+    script/Deploy.s.sol         Foundry deploy script (Somnia Testnet)
+    foundry.toml                Somnia RPC endpoint configured
+  runtime/
+    src/agent.ts                AI agent loop
+    src/mcp-server.ts           MCP tool server
+    src/executor.ts             On-chain executor (viem)
+  dashboard/
+    src/app/page.tsx            Main dashboard
+    src/app/somnia/             Somnia-specific view
+    src/lib/wagmi.ts            Somnia Testnet chain config
+  somnia/
+    agent/somniaAgent.ts        Somnia agent entry point
+    contracts/deploy-somnia.sh  One-command Somnia deploy
+    skills/agentWalletSkill.ts  MCP skill wrapper
+    README.md                   Somnia-specific docs
+  mantle/                       Mantle Turing Test (separate submission)
   packages/
-    eth-agent-kit/      npm install eth-agent-kit
-    create-eth-agent/   npx create-eth-agent
+    create-somnia-agent/        npx create-somnia-agent scaffold CLI
 ```
 
-## Package & Monorepo Overview
+---
 
-This repository is an npm workspace monorepo with publishable packages:
+## License
 
-- `eth-agent-kit` — SDK for building Ethereum AI agents programmatically
-- `create-eth-agent` — scaffolding CLI used by `npx create-eth-agent`
-
-Published packages:
-
-- `eth-agent-kit` on npm
-- `create-eth-agent@0.1.4` on npm (includes TS config compatibility fix)
-
-## Troubleshooting
-
-### `npm run build` fails in a scaffolded project with `node_modules/ox/...` TypeScript errors
-
-Symptoms include errors like:
-
-- `Property 'replaceAll' does not exist on type 'string'`
-- `Cannot find name 'window'`
-- `AuthenticatorAttestationResponse` / `AuthenticationExtensionsClientOutputs` missing
-
-Cause: an older scaffold template TypeScript config (`target/lib` too old for current `viem`/`ox` types).
-
-Fix:
-
-1. Scaffold with latest CLI:
-
-```bash
-npx create-eth-agent@latest my-agent
-```
-
-2. Or patch `tsconfig.json` in existing generated projects:
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM"]
-  }
-}
-```
-
-Then re-run:
-
-```bash
-npm run build
-```
-
-## Requirements
-
-- Node.js 18+
-- Sepolia testnet ETH (https://sepoliafaucet.com)
-- Deployed AgentWallet contract
-- At least one AI provider key required:
-  - Groq (recommended, free): console.groq.com
-  - OpenRouter (free models): openrouter.ai
-  - Google Gemini (free tier): aistudio.google.com
+MIT

@@ -1,6 +1,6 @@
 import { createPublicClient, http } from "viem"
-import { sepolia } from "viem/chains"
 import { requireAddress, requireEnv } from "./env"
+import { somniaTestnet } from "./chain"
 import { describeSelector, formatUnlockTime } from "./pending-format"
 
 const CONTRACT = requireAddress("AGENT_CONTRACT_ADDRESS")
@@ -25,8 +25,8 @@ const ABI = [
 
 async function checkPending() {
   const client = createPublicClient({
-    chain: sepolia,
-    transport: http(requireEnv("ALCHEMY_RPC_URL"))
+    chain: somniaTestnet,
+    transport: http(requireEnv("RPC_URL"))
   })
 
   const pending = await client.readContract({

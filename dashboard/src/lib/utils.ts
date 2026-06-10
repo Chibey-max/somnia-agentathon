@@ -1,9 +1,9 @@
 import { createPublicClient, fallback, http, formatEther } from 'viem';
-import { sepolia } from 'viem/chains';
+import { somniaTestnet } from './wagmi';
 import { RPC_URLS } from './contract';
 
 export const publicClient = createPublicClient({
-  chain: sepolia,
+  chain: somniaTestnet,
   transport: fallback(RPC_URLS.map((url) => http(url))),
 });
 
@@ -21,13 +21,13 @@ export function formatETH(value: bigint, decimals = 6): string {
 export function formatETHShort(value: bigint): string {
   const formatted = formatEther(value);
   const num = parseFloat(formatted);
-  if (num === 0) return '0 ETH';
-  if (num < 0.000001) return '< 0.000001 ETH';
-  return `${num.toFixed(6)} ETH`;
+  if (num === 0) return '0 STT';
+  if (num < 0.000001) return '< 0.000001 STT';
+  return `${num.toFixed(6)} STT`;
 }
 
 export function formatSelector(selector: string): string {
-  if (selector === '0x00000000') return 'ETH Transfer';
+  if (selector === '0x00000000') return 'STT Transfer';
   return selector;
 }
 
@@ -44,8 +44,8 @@ export function formatCountdown(unlockTimeMs: number): string {
   return `${minutes}m ${seconds}s`;
 }
 
-export function getEtherscanLink(hash: string, type: 'tx' | 'address' = 'tx'): string {
-  const base = 'https://sepolia.etherscan.io';
+export function getExplorerLink(hash: string, type: 'tx' | 'address' = 'tx'): string {
+  const base = 'https://shannon-explorer.somnia.network';
   return type === 'tx' ? `${base}/tx/${hash}` : `${base}/address/${hash}`;
 }
 

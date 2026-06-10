@@ -1,4 +1,4 @@
-# Deploy Your Own AgentWallet (Foundry)
+# Deploy Your Own AgentWallet (Foundry — Somnia Testnet)
 
 This project deploys `AgentWallet` using Foundry script:
 
@@ -18,8 +18,9 @@ Edit `.env`:
 ```env
 AGENT_ADDRESS=0x...         # agent role address
 GUARDIAN_ADDRESS=0x...      # guardian role address
-PRIVATE_KEY=0x...           # deployer private key (funded on Sepolia)
-RPC_URL=https://sepolia.drpc.org
+PRIVATE_KEY=0x...           # deployer private key (funded on Somnia Testnet)
+RPC_URL=https://dream-rpc.somnia.network
+CHAIN_ID=50312
 ```
 
 ---
@@ -49,12 +50,13 @@ cast block-number --rpc-url "$RPC_URL"
 
 ---
 
-## 3) Deploy
+## 3) Deploy to Somnia Testnet
 
 ```bash
 forge script script/Deploy.s.sol:DeployScript \
-  --rpc-url "$RPC_URL" \
+  --rpc-url https://dream-rpc.somnia.network \
   --broadcast \
+  --chain-id 50312 \
   --private-key "$PRIVATE_KEY"
 ```
 
@@ -89,10 +91,11 @@ npm run setup
 
 ### Invalid private key
 - Key must be `0x` + 64 hex chars.
-- Don’t pass literal `PRIVATE_KEY`; pass `$PRIVATE_KEY` after sourcing `.env`.
+- Don't pass literal `PRIVATE_KEY`; pass `$PRIVATE_KEY` after sourcing `.env`.
 
 ### --rpc-url missing
 - `$RPC_URL` is empty because `.env` was not sourced.
 
 ### Provider/RPC rejected request
-- Switch RPC to `https://sepolia.drpc.org` or your own Alchemy endpoint.
+- Somnia Testnet RPC: `https://dream-rpc.somnia.network`
+- No API key required.

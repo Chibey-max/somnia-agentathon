@@ -1,10 +1,10 @@
 {
-  "name": "create-eth-agent",
+  "name": "create-somnia-agent",
   "version": "0.1.4",
-  "description": "Create an Ethereum AI agent project in seconds",
+  "description": "Create a Somnia AI agent project in seconds",
   "main": "./dist/index.js",
   "bin": {
-    "create-eth-agent": "dist/index.js"
+    "create-somnia-agent": "dist/index.js"
   },
   "files": [
     "dist",
@@ -15,7 +15,7 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "ethereum",
+    "somnia",
     "ai-agent",
     "mcp",
     "create",
@@ -24,7 +24,8 @@
     "solidity",
     "cursor",
     "kiro",
-    "claude"
+    "claude",
+    "agentic-l1"
   ],
   "license": "MIT",
   "devDependencies": {
@@ -39,7 +40,7 @@
     "@wagmi/connectors": "^5.11.2",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
-    "eth-agent-kit": "latest",
+    "somnia-agent-kit": "latest",
     "express": "^4.18.0",
     "nodemon": "^3.1.10",
     "openai": "^4.104.0",

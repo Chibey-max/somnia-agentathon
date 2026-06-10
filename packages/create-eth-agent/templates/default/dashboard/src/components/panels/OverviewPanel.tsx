@@ -34,7 +34,7 @@ export function OverviewPanel() {
           ) : (
             <Badge variant="green" pulse>● ACTIVE</Badge>
           )}
-          <Badge variant="blue">Sepolia</Badge>
+          <Badge variant="blue">Somnia</Badge>
           {lastUpdated && (
             <span className="text-text-muted text-xs font-mono">
               Updated {lastUpdated.toLocaleTimeString()}
@@ -45,16 +45,16 @@ export function OverviewPanel() {
         {/* Grid of stats */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-text-muted text-xs font-mono uppercase tracking-wider mb-1">ETH Balance</p>
+            <p className="text-text-muted text-xs font-mono uppercase tracking-wider mb-1">STT Balance</p>
             <p className="text-green font-mono text-lg font-bold">
               {data ? parseFloat(data.balanceFormatted).toFixed(6) : '—'}
             </p>
-            <p className="text-text-muted font-mono text-xs">ETH</p>
+            <p className="text-text-muted font-mono text-xs">STT</p>
           </div>
           <div>
             <p className="text-text-muted text-xs font-mono uppercase tracking-wider mb-1">Network</p>
-            <p className="text-text-primary font-mono text-sm font-bold">Ethereum</p>
-            <p className="text-text-muted font-mono text-xs">Sepolia Testnet</p>
+            <p className="text-text-primary font-mono text-sm font-bold">Somnia</p>
+            <p className="text-text-muted font-mono text-xs">Somnia Testnet</p>
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export function OverviewPanel() {
         {/* Chain ID */}
         <div className="flex justify-between items-center text-xs font-mono text-text-muted pt-1 border-t border-border">
           <span>CHAIN ID</span>
-          <span className="text-text-secondary">11155111</span>
+          <span className="text-text-secondary">50312</span>
         </div>
       </div>
     </Panel>

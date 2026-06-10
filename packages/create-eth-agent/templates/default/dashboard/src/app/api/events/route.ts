@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createPublicClient, http, parseAbiItem } from 'viem';
-import { sepolia } from 'viem/chains';
+import { createPublicClient, defineChain, http, parseAbiItem } from 'viem';
 import { CONTRACT_ADDRESS, RPC_URLS } from '@/lib/contract';
 
 export const dynamic = 'force-dynamic';
+
+const somniaTestnet = defineChain({
+  id: 50312,
+  name: 'Somnia Testnet',
+  nativeCurrency: { name: 'Somnia Token', symbol: 'STT', decimals: 18 },
+  rpcUrls: { default: { http: ['https://dream-rpc.somnia.network'] } },
+  blockExplorers: {
+    default: { name: 'Somnia Explorer', url: 'https://shannon-explorer.somnia.network' },
+  },
+});
 
 const EXECUTED_EVENT = parseAbiItem(
   'event Executed(address indexed target, uint256 value, bytes4 selector)'
@@ -33,7 +42,7 @@ const BIGINT_ZERO = BigInt(0);
 const BIGINT_ONE = BigInt(1);
 const QUICKNODE_MIN_RANGE = BigInt(5);
 const DEFAULT_LOG_RANGE = BigInt(2_000);
-const LOOKBACK_BLOCKS = BigInt(50_400); // ~7 days on Sepolia
+const LOOKBACK_BLOCKS = BigInt(50_400);
 const MAX_CHUNKS_PER_REQUEST = 80; // hard bound to keep latency predictable
 const MAX_EVENT_CACHE = 500;
 
@@ -82,7 +91,7 @@ export async function GET(req: NextRequest) {
 
     const providerStates: ProviderState[] = RPC_URLS.map((url) => ({
       client: createPublicClient({
-        chain: sepolia,
+        chain: somniaTestnet,
         transport: http(url, { timeout: 5_000, retryCount: 0 }),
       }),
       // QuickNode discover plans can enforce very small eth_getLogs ranges.

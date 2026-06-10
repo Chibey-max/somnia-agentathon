@@ -1,7 +1,7 @@
 {
-  "name": "eth-agent-kit",
+  "name": "somnia-agent-kit",
   "version": "0.1.0",
-  "description": "Ethereum AI agent framework with on-chain policy enforcement via AgentWallet",
+  "description": "Somnia AI agent framework with on-chain policy enforcement via AgentWallet",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": ["dist", "README.md"],
@@ -10,8 +10,8 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "ethereum", "ai-agent", "mcp", "web3", "solidity",
-    "viem", "sepolia", "agentkit", "autonomous-agent"
+    "somnia", "ai-agent", "mcp", "web3", "solidity",
+    "viem", "agentic-l1", "agentkit", "autonomous-agent"
   ],
   "license": "MIT",
   "dependencies": {

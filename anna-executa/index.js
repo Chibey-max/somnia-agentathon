@@ -33,13 +33,13 @@ rl.on("line", async line => {
 
   if (req.method === "describe") {
     result = {
-      name: "eth-agent",
-      description: "Autonomous Ethereum AI agent with on-chain policy enforcement and T3N verifiable identity",
+      name: "somnia-agent",
+      description: "Autonomous Somnia AI agent with on-chain policy enforcement and T3N verifiable identity",
       tools
     };
   } else if (req.method === "call") {
     result = {
-      output: `eth-agent tool '${req.params.name}' called. Connect to your deployed AgentWallet on Sepolia. See https://github.com/Chibey-max/Ethereum-Agentic for setup.`
+      output: `somnia-agent tool '${req.params.name}' called. Connect to your deployed AgentWallet on Somnia Testnet. See https://github.com/Chibey-max/somnia-agentathon for setup.`
     };
   }
 

@@ -1,22 +1,24 @@
 export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ||
   '0xE49A6044D47De19504B73aA36F31899843B05259') as `0x${string}`;
 
-export const CHAIN_ID = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || '11155111');
+export const CHAIN_ID = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || '50312');
 
 export const ALCHEMY_RPC_URL =
-  process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL ||
-  'https://eth-sepolia.g.alchemy.com/v2/demo';
+  process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL || '';
 
 export const ANKR_RPC_URL =
-  process.env.NEXT_PUBLIC_ANKR_RPC_URL ||
-  'https://rpc.ankr.com/eth_sepolia/1092ec888da7f98c638afd3663c60205e2bbf66b293de56abcc22904bf2213ed';
+  process.env.NEXT_PUBLIC_ANKR_RPC_URL || '';
 
 export const QUICKNODE_RPC_URL =
-  process.env.NEXT_PUBLIC_QUICKNODE_RPC_URL ||
-  '';
+  process.env.NEXT_PUBLIC_QUICKNODE_RPC_URL || '';
 
 export const RPC_URLS = Array.from(
-  new Set([ALCHEMY_RPC_URL, ANKR_RPC_URL, QUICKNODE_RPC_URL].filter(Boolean))
+  new Set([
+    ALCHEMY_RPC_URL,
+    ANKR_RPC_URL,
+    QUICKNODE_RPC_URL,
+    'https://dream-rpc.somnia.network',
+  ].filter(Boolean))
 );
 
 export const GUARDIAN_ADDRESS = (process.env.NEXT_PUBLIC_GUARDIAN_ADDRESS ||

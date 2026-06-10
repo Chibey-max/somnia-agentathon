@@ -6,8 +6,8 @@ import { useAccount, useWriteContract } from 'wagmi';
 import { CONTRACT_ADDRESS, AGENT_WALLET_ABI } from '@/lib/contract';
 import { useContractState } from '@/hooks/useContractState';
 import { parseEther, createPublicClient, fallback, http } from 'viem';
-import { sepolia } from 'viem/chains';
 import { RPC_URLS } from '@/lib/contract';
+import { somniaTestnet } from '@/lib/wagmi';
 import { formatAddress } from '@/lib/utils';
 
 interface TokenPolicyEntry {
@@ -39,7 +39,7 @@ export function TokenPolicyPanel() {
     setLookupLoading(true);
     try {
       const client = createPublicClient({
-        chain: sepolia,
+        chain: somniaTestnet,
         transport: fallback(RPC_URLS.map((url) => http(url))),
       });
       const result = await client.readContract({

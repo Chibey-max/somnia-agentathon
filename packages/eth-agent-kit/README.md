@@ -1,17 +1,17 @@
-# eth-agent-kit
+# somnia-agent-kit
 
-Ethereum AI agent framework. Connect an AI assistant to an
+Somnia AI agent framework. Connect an AI assistant to an
 `AgentWallet` smart contract with enforced spending limits.
 
 ## Install
 
 ```bash
-npm install eth-agent-kit
+npm install somnia-agent-kit
 ```
 
 ## Features
 
-- On-chain policy-enforced ETH/token execution via `AgentWallet`
+- On-chain policy-enforced STT/token execution via `AgentWallet`
 - AI provider fallback support (Groq, OpenRouter, Google)
 - Direct SDK calls (`run`, `transferETH`, `getState`, `preflight`)
 - MCP server startup for IDE integration (`startMCPServer`)
@@ -19,20 +19,21 @@ npm install eth-agent-kit
 ## Usage
 
 ```ts
-import { ETHAgent } from 'eth-agent-kit'
+import { SomniaAgent } from 'somnia-agent-kit'
 
-const agent = new ETHAgent({
+const agent = new SomniaAgent({
   contractAddress: '0x...',
   privateKey: '0x...',
-  rpcUrl: 'https://rpc.ankr.com/eth_sepolia',
+  rpcUrl: 'https://dream-rpc.somnia.network',
+  chainId: 50312,
   groqApiKey: 'gsk_...'
 })
 
 // Ask the agent anything
-const result = await agent.run('What is my ETH balance?')
+const result = await agent.run('What is my STT balance?')
 
 // Stream events
-await agent.run('Send 0.01 ETH to 0x...', (event) => {
+await agent.run('Send 0.01 STT to 0x...', (event) => {
   if (event.type === 'tool_call') console.log('Calling:', event.name)
   if (event.type === 'done') console.log('Result:', event.content)
 })
@@ -43,7 +44,7 @@ console.log('Sent:', tx.etherscanUrl)
 
 // Read contract state
 const state = await agent.getState()
-console.log('Balance:', state.balance, 'ETH')
+console.log('Balance:', state.balance, 'STT')
 
 // Start as MCP server for IDE
 agent.startMCPServer()

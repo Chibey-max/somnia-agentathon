@@ -1,5 +1,5 @@
 {
-  "name": "eth-agent-template",
+  "name": "somnia-agent-template",
   "private": true,
   "workspaces": [
     "runtime",

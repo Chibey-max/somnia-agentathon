@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createPublicClient, http, formatEther } from 'viem';
-import { sepolia } from 'viem/chains';
+import { createPublicClient, defineChain, http, formatEther } from 'viem';
 import { CONTRACT_ADDRESS, AGENT_WALLET_ABI, RPC_URLS } from '@/lib/contract';
 
 export const dynamic = 'force-dynamic';
@@ -10,10 +9,20 @@ const CACHE_TTL_MS = 10_000;
 let cache: { data: unknown; expiresAt: number } | null = null;
 let inflight: Promise<unknown> | null = null;
 
+const somniaTestnet = defineChain({
+  id: 50312,
+  name: 'Somnia Testnet',
+  nativeCurrency: { name: 'Somnia Token', symbol: 'STT', decimals: 18 },
+  rpcUrls: { default: { http: ['https://dream-rpc.somnia.network'] } },
+  blockExplorers: {
+    default: { name: 'Somnia Explorer', url: 'https://shannon-explorer.somnia.network' },
+  },
+});
+
 async function readContractState() {
   const clients = RPC_URLS.map((url) =>
     createPublicClient({
-      chain: sepolia,
+      chain: somniaTestnet,
       transport: http(url, { timeout: 8_000, retryCount: 0 }),
     })
   );
@@ -101,8 +110,8 @@ async function readContractState() {
       queued: true,
       unlockTimeMs: Number(pcUnlockTime) * 1000,
     } : null,
-    network: 'Sepolia',
-    chainId: 11155111,
+    network: 'Somnia Testnet',
+    chainId: 50312,
   };
 }
 

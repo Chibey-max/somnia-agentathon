@@ -1,4 +1,4 @@
-# eth-agent MCP integration
+# somnia-agent MCP integration
 
 This repo is configured so MCP works after cloning without hardcoded local paths.
 
@@ -30,7 +30,7 @@ If you open the `runtime/` folder directly instead of the repo root, `npm run -s
 - `get_tx_status`
 - `get_agent_info`
 
-> Safety: `transfer_eth` and `transfer_token` can submit real Sepolia transactions. Keep this MCP server available only to trusted agentic clients.
+> Safety: `transfer_eth` and `transfer_token` can submit real Somnia Testnet transactions. Keep this MCP server available only to trusted agentic clients.
 
 ## Cursor
 
@@ -45,7 +45,7 @@ It uses:
 ```json
 {
   "mcpServers": {
-    "eth-agent": {
+    "somnia-agent": {
       "command": "npm",
       "args": ["run", "-s", "mcp"]
     }
@@ -92,10 +92,10 @@ After cloning, set `cwd` to your local clone path:
 ```json
 {
   "mcpServers": {
-    "eth-agent": {
+    "somnia-agent": {
       "command": "npm",
       "args": ["run", "-s", "mcp"],
-      "cwd": "/path/to/your/eth-agent"
+      "cwd": "/path/to/your/somnia-agent-kit"
     }
   }
 }
@@ -106,9 +106,9 @@ If your global client ignores `cwd`, use an absolute `--prefix` path for that lo
 ```json
 {
   "mcpServers": {
-    "eth-agent": {
+    "somnia-agent": {
       "command": "npm",
-      "args": ["--prefix", "/path/to/your/eth-agent/runtime", "run", "-s", "mcp"]
+      "args": ["--prefix", "/path/to/your/somnia-agent-kit/runtime", "run", "-s", "mcp"]
     }
   }
 }
@@ -125,7 +125,7 @@ npm run -s mcp
 Expected stderr output:
 
 ```text
-eth-agent MCP server running on stdio
+somnia-agent MCP server running on stdio
 ```
 
 Stop it with `Ctrl+C`. In normal use, your MCP client launches it automatically.

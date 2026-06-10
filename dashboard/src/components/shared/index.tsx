@@ -2,7 +2,7 @@
 
 import { useState, ReactNode } from 'react';
 import { Copy, Check, ExternalLink } from 'lucide-react';
-import { formatAddress, getEtherscanLink, cn } from '@/lib/utils';
+import { formatAddress, getExplorerLink, cn } from '@/lib/utils';
 
 // ── Panel ──────────────────────────────────────────────────────────────────
 interface PanelProps {
@@ -112,7 +112,7 @@ export function AddressDisplay({ address, label, etherscan = true, className }: 
           {copied ? <Check size={11} /> : <Copy size={11} />}
         </button>
         {etherscan && (
-          <a href={getEtherscanLink(address, 'address')} target="_blank" rel="noopener noreferrer"
+          <a href={getExplorerLink(address, 'address')} target="_blank" rel="noopener noreferrer"
             className="text-text-muted hover:text-blue-bright transition-colors p-0.5">
             <ExternalLink size={11} />
           </a>

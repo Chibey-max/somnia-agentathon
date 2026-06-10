@@ -15,7 +15,7 @@ Body:
 ```json
 {
   "action": "agent_wallet_execute",
-  "chainId": 11155111,
+  "chainId": 50312,
   "contractAddress": "0x...",
   "target": "0x...",
   "value": "10000000000000000",

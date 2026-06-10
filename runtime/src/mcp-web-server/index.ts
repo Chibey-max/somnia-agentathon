@@ -154,7 +154,7 @@ app.get("/health", (_req, res) => {
     status: "ok",
     connectedClients: sessionStore.count(),
     contractAddress,
-    network: { name: "sepolia", chainId: 11155111 }
+    network: { name: "somnia-testnet", chainId: 50312 }
   })
 })
 

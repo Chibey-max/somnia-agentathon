@@ -18,7 +18,7 @@ export async function readState(): Promise<WalletState> {
 
     return {
       contractAddress: AGENT_WALLET_ADDRESS,
-      chainId: 11155111,
+      chainId: 50312,
       balanceWei,
       agent,
       guardian,

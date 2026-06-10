@@ -5,7 +5,7 @@ import readline from "node:readline/promises"
 import { stdin as input, stdout as output } from "node:process"
 import { createPublicClient, formatEther, http } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
-import { sepolia } from "viem/chains"
+import { somniaTestnet } from "../src/chain"
 import {
   getRpcUrl,
   getRuntimeEnvPath,
@@ -127,7 +127,7 @@ async function writeMergedMcpConfig(filePath: string, absoluteServerPath: string
       ? { ...(currentMcpServersRaw as Record<string, unknown>) }
       : {}
 
-  currentMcpServers["eth-agent"] = {
+  currentMcpServers["somnia-agent"] = {
     command: "node",
     args: [absoluteServerPath]
   }
@@ -182,7 +182,7 @@ function validateRequiredEnv(): void {
 }
 
 async function runSetup(options: SetupOptions): Promise<void> {
-  log("ETH Agent setup starting...")
+  log("Somnia Agent setup starting...")
   log(`Using env file: ${getRuntimeEnvPath()}`)
 
   validateRequiredEnv()
@@ -191,14 +191,14 @@ async function runSetup(options: SetupOptions): Promise<void> {
   const contractAddress = requireAddress("AGENT_CONTRACT_ADDRESS")
   const agentPrivateKey = requirePrivateKey("AGENT_PRIVATE_KEY")
 
-  const client = createPublicClient({ chain: sepolia, transport: http(rpcUrl) })
+  const client = createPublicClient({ chain: somniaTestnet, transport: http(rpcUrl) })
 
   const blockNumber = await client.getBlockNumber()
   log(`RPC connection OK. Current block: ${blockNumber.toString()}`)
 
   const bytecode = await client.getBytecode({ address: contractAddress })
   if (!bytecode || bytecode === "0x") {
-    throw new Error(`No contract code found at AGENT_CONTRACT_ADDRESS=${contractAddress} on Sepolia.`)
+    throw new Error(`No contract code found at AGENT_CONTRACT_ADDRESS=${contractAddress} on Somnia Testnet.`)
   }
 
   const [agent, guardian, ethTxLimit, ethDailyLimit, paused] = await Promise.all([
@@ -212,8 +212,8 @@ async function runSetup(options: SetupOptions): Promise<void> {
   log("\nContract state:")
   log(`Agent address: ${agent}`)
   log(`Guardian address: ${guardian}`)
-  log(`ETH tx limit: ${formatEther(ethTxLimit)} ETH`)
-  log(`Daily limit: ${formatEther(ethDailyLimit)} ETH`)
+  log(`STT tx limit: ${formatEther(ethTxLimit)} STT`)
+  log(`Daily limit: ${formatEther(ethDailyLimit)} STT`)
   log(`Status: ${paused ? "PAUSED" : "Active"}`)
 
   const localAgent = privateKeyToAccount(agentPrivateKey)
@@ -259,7 +259,7 @@ async function runSetup(options: SetupOptions): Promise<void> {
   log("\nSetup complete ✅")
   log("Next steps:")
   log("1) Restart your IDE")
-  log("2) Open IDE chat and ask: 'What is my ETH balance?'")
+  log("2) Open IDE chat and ask: 'What is my STT balance?'")
   log("3) Ask: 'What are my spending limits?'")
 }
 

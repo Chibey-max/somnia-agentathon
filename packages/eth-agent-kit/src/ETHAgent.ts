@@ -1,6 +1,7 @@
 import OpenAI from 'openai'
 import { z } from 'zod'
 import {
+  defineChain,
   createPublicClient,
   createWalletClient,
   encodeFunctionData,
@@ -14,7 +15,6 @@ import {
   type Hex
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { sepolia } from 'viem/chains'
 import { AGENT_WALLET_ABI } from './abi'
 import type { AgentConfig, AgentEvent, PreflightResult, TransactionResult, WalletState } from './types'
 import { startMCPServer as startMCP } from './mcp'
@@ -42,16 +42,28 @@ type ProviderConfig = { name: ProviderName; client: OpenAI; model: string }
 const ZERO_SELECTOR = '0x00000000' as const
 const CONVERSATIONAL_ONLY = /^(hi|hello|hey|gm|gn|yo|sup|thanks|thank you|who are you|what can you do|help)\b/i
 const ACTION_HINTS = /\b(send|transfer|swap|approve|execute|status|tx|hash|balance|limit|whitelist|pending|history|wallet)\b/i
+const SOMNIA_RPC_URL = 'https://dream-rpc.somnia.network'
+const SOMNIA_EXPLORER_URL = 'https://shannon-explorer.somnia.network'
 
-const addressSchema = z.string().refine((v) => isAddress(v), 'Invalid Ethereum address')
+const somniaTestnet = defineChain({
+  id: 50312,
+  name: 'Somnia Testnet',
+  nativeCurrency: { name: 'Somnia Token', symbol: 'STT', decimals: 18 },
+  rpcUrls: { default: { http: [SOMNIA_RPC_URL] } },
+  blockExplorers: {
+    default: { name: 'Somnia Explorer', url: SOMNIA_EXPLORER_URL }
+  }
+})
+
+const addressSchema = z.string().refine((v) => isAddress(v), 'Invalid Somnia address')
 const hexSchema = z.string().regex(/^0x[0-9a-fA-F]*$/, 'Must be a hex string')
 
 const runtimeTools = [
   { name: 'get_wallet_state', description: 'Read current AgentWallet state.', inputSchema: { type: 'object', properties: {}, required: [] }, schema: z.object({}).strict() },
-  { name: 'transfer_eth', description: 'Send ETH from AgentWallet to recipient with policy checks.', inputSchema: { type: 'object', properties: { to: { type: 'string' }, amount: { type: 'string' } }, required: ['to', 'amount'] }, schema: z.object({ to: addressSchema, amount: z.string().min(1) }).strict() },
+  { name: 'transfer_eth', description: 'Send STT from AgentWallet to recipient with policy checks.', inputSchema: { type: 'object', properties: { to: { type: 'string' }, amount: { type: 'string' } }, required: ['to', 'amount'] }, schema: z.object({ to: addressSchema, amount: z.string().min(1) }).strict() },
   { name: 'transfer_token', description: 'Transfer ERC20 via AgentWallet.execute with policy checks.', inputSchema: { type: 'object', properties: { token: { type: 'string' }, to: { type: 'string' }, amount: { type: 'string' }, decimals: { type: 'number' } }, required: ['token', 'to', 'amount', 'decimals'] }, schema: z.object({ token: addressSchema, to: addressSchema, amount: z.string().min(1), decimals: z.number().int().min(0).max(36) }).strict() },
   { name: 'get_tx_status', description: 'Get tx status by hash.', inputSchema: { type: 'object', properties: { txHash: { type: 'string' } }, required: ['txHash'] }, schema: z.object({ txHash: hexSchema.regex(/^0x[0-9a-fA-F]{64}$/, 'Invalid tx hash') }).strict() },
-  { name: 'check_limits', description: 'Read ETH policy limits and remaining allowance.', inputSchema: { type: 'object', properties: {}, required: [] }, schema: z.object({}).strict() },
+  { name: 'check_limits', description: 'Read native STT policy limits and remaining allowance.', inputSchema: { type: 'object', properties: {}, required: [] }, schema: z.object({}).strict() },
   { name: 'check_whitelist', description: 'Preflight target + selector policy checks.', inputSchema: { type: 'object', properties: { target: { type: 'string' }, selector: { type: 'string' }, recipient: { type: 'string' }, amount: { type: 'string' } }, required: ['target', 'selector'] }, schema: z.object({ target: addressSchema, selector: z.string().regex(/^0x[0-9a-fA-F]{8}$/), recipient: addressSchema.optional(), amount: z.string().regex(/^\d+$/).optional() }).strict() },
   { name: 'get_pending_actions', description: 'Read pending timelocked actions.', inputSchema: { type: 'object', properties: {}, required: [] }, schema: z.object({}).strict() },
   { name: 'get_transaction_history', description: 'Read recent Executed events.', inputSchema: { type: 'object', properties: { limit: { type: 'number' }, fromBlock: { type: 'string' } }, required: [] }, schema: z.object({ limit: z.number().int().min(1).max(100).optional(), fromBlock: z.string().regex(/^\d+$/).optional() }).strict() }
@@ -59,33 +71,31 @@ const runtimeTools = [
 
 const ERC20_ABI = [{ name: 'transfer', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'to', type: 'address' }, { name: 'amount', type: 'uint256' }], outputs: [{ type: 'bool' }] }] as const
 
-export class ETHAgent {
+export class SomniaAgent {
   private readonly config: AgentConfig
   private readonly account
   private readonly publicClient
   private readonly walletClient
 
   constructor(config: AgentConfig) {
-    const chainId = config.chainId ?? 11155111
-    if (chainId !== sepolia.id) {
-      throw new Error(`Unsupported CHAIN_ID=${chainId}. This SDK currently supports Sepolia only (${sepolia.id}).`)
+    const chainId = config.chainId ?? somniaTestnet.id
+    if (chainId !== somniaTestnet.id) {
+      throw new Error(`Unsupported CHAIN_ID=${chainId}. Expected Somnia Testnet (${somniaTestnet.id}).`)
     }
     const normalizedPrivateKey = config.privateKey.startsWith('0x') ? config.privateKey : (`0x${config.privateKey}` as `0x${string}`)
     this.config = { ...config, privateKey: normalizedPrivateKey, chainId }
     this.account = privateKeyToAccount(normalizedPrivateKey)
     const transport = fallback([
       http(config.rpcUrl, { timeout: 15_000, retryCount: 2, retryDelay: 250 }),
-      http('https://rpc.ankr.com/eth_sepolia', { timeout: 15_000, retryCount: 2, retryDelay: 250 }),
-      http('https://sepolia.drpc.org', { timeout: 15_000, retryCount: 2, retryDelay: 250 }),
-      http('https://ethereum-sepolia-rpc.publicnode.com', { timeout: 15_000, retryCount: 2, retryDelay: 250 })
+      http(SOMNIA_RPC_URL, { timeout: 15_000, retryCount: 2, retryDelay: 250 })
     ])
-    this.publicClient = createPublicClient({ chain: sepolia, transport })
-    this.walletClient = createWalletClient({ account: this.account, chain: sepolia, transport })
+    this.publicClient = createPublicClient({ chain: somniaTestnet, transport })
+    this.walletClient = createWalletClient({ account: this.account, chain: somniaTestnet, transport })
   }
 
   async run(goal: string, onEvent?: (e: AgentEvent) => void): Promise<string> {
     try {
-      onEvent?.({ type: 'thought', content: 'ETH Agent is thinking...' })
+      onEvent?.({ type: 'thought', content: 'SomniaAgent is thinking...' })
       const providers = this.buildProviders()
       const state = await this.getState()
       const system = this.buildSystemPrompt(state)
@@ -162,7 +172,7 @@ export class ETHAgent {
         agent,
         guardian,
         contractAddress: this.config.contractAddress,
-        network: 'sepolia'
+        network: 'somnia-testnet'
       }
     } catch (error) {
       throw new Error(`Failed to read wallet state: ${this.cleanError(error)}`)
@@ -250,11 +260,11 @@ export class ETHAgent {
 
   private buildSystemPrompt(state: WalletState): string {
     return [
-      'You are ETH Agent, a calm and practical Ethereum operations copilot.',
+      'You are SomniaAgent, a calm and practical Somnia operations copilot.',
       '',
       'Safety constraints are on-chain and must be respected.',
       '- If paused, no transfers should proceed.',
-      '- ETH transfers must be within per-transaction and daily limits.',
+      '- STT transfers must be within per-transaction and daily limits.',
       '- Target + selector must be whitelisted by policy.',
       '- Token transfers may have token-specific daily limits.',
       '',
@@ -268,11 +278,11 @@ export class ETHAgent {
       `- Agent role: ${state.agent}`,
       `- Guardian role: ${state.guardian}`,
       `- Status: ${state.paused ? 'PAUSED' : 'ACTIVE'}`,
-      `- ETH balance: ${state.balance} ETH`,
-      `- ETH per-tx limit: ${state.ethTxLimit} ETH`,
-      `- ETH daily limit: ${state.ethDailyLimit} ETH`,
-      `- ETH spent today: ${state.ethDailySpent} ETH`,
-      `- ETH remaining today: ${state.remainingToday} ETH`
+      `- STT balance: ${state.balance} STT`,
+      `- STT per-tx limit: ${state.ethTxLimit} STT`,
+      `- STT daily limit: ${state.ethDailyLimit} STT`,
+      `- STT spent today: ${state.ethDailySpent} STT`,
+      `- STT remaining today: ${state.remainingToday} STT`
     ].join('\n')
   }
 
@@ -302,11 +312,11 @@ export class ETHAgent {
     for (const provider of providers) {
       try {
         const response = await provider.client.chat.completions.create({ ...payload, model: provider.model })
-        if (provider.name !== 'groq') console.error(`[eth-agent-kit] fallback provider used: ${provider.name}`)
+        if (provider.name !== 'groq') console.error(`[somnia-agent-kit] fallback provider used: ${provider.name}`)
         return response
       } catch (error) {
         lastError = error
-        console.error(`[eth-agent-kit] provider failed (${provider.name}): ${this.cleanError(error)}`)
+        console.error(`[somnia-agent-kit] provider failed (${provider.name}): ${this.cleanError(error)}`)
       }
     }
     throw new Error(`All LLM providers failed. Last error: ${this.cleanError(lastError)}`)
@@ -522,6 +532,8 @@ export class ETHAgent {
   }
 
   private getExplorerTxUrl(txHash: `0x${string}`): string {
-    return `https://sepolia.etherscan.io/tx/${txHash}`
+    return `${SOMNIA_EXPLORER_URL}/tx/${txHash}`
   }
 }
+
+export { SomniaAgent as ETHAgent }

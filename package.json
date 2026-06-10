@@ -1,5 +1,5 @@
 {
-  "name": "eth-agent",
+  "name": "somnia-agent-kit",
   "private": true,
   "workspaces": [
     "runtime",

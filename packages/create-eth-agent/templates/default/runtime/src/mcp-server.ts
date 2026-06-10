@@ -6,8 +6,8 @@ import { runtimeTools, toolMap, type ToolName } from "./tools"
 
 async function tryStartKitServer(): Promise<boolean> {
   try {
-    // Optional local workspace integration with eth-agent-kit
-    const kit = await import("eth-agent-kit")
+    // Optional local workspace integration with somnia-agent-kit
+    const kit = await import("somnia-agent-kit")
     const contractAddress = process.env.AGENT_CONTRACT_ADDRESS as `0x${string}` | undefined
     const privateKey = process.env.AGENT_PRIVATE_KEY as `0x${string}` | undefined
     const rpcUrl = process.env.RPC_URL ?? process.env.ALCHEMY_RPC_URL
@@ -16,14 +16,14 @@ async function tryStartKitServer(): Promise<boolean> {
       return false
     }
 
-    const agent = new kit.ETHAgent({
+    const agent = new kit.SomniaAgent({
       contractAddress,
       privateKey,
       rpcUrl,
       groqApiKey: process.env.GROQ_API_KEY,
       openRouterApiKey: process.env.OPENROUTER_API_KEY,
       googleApiKey: process.env.GOOGLE_API_KEY,
-      chainId: process.env.CHAIN_ID ? Number(process.env.CHAIN_ID) : 11155111,
+      chainId: process.env.CHAIN_ID ? Number(process.env.CHAIN_ID) : 50312,
       guardianAddress: process.env.GUARDIAN_ADDRESS
     })
 
@@ -68,7 +68,7 @@ function errorResult(message: string, details?: unknown) {
 }
 
 const server = new Server(
-  { name: "eth-agent", version: "1.0.0" },
+  { name: "somnia-agent", version: "1.0.0" },
   {
     capabilities: {
       tools: {}
@@ -116,7 +116,7 @@ async function main() {
   try {
     transport = new StdioServerTransport()
     await server.connect(transport)
-    console.error("[mcp-server] eth-agent connected over stdio")
+    console.error("[mcp-server] somnia-agent connected over stdio")
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     console.error(`[mcp-server] startup error: ${message}`)

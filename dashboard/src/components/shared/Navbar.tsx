@@ -18,10 +18,10 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-green animate-pulse" />
-            <span className="font-mono text-xs font-bold text-green tracking-widest uppercase">ETH Agent</span>
+            <span className="font-mono text-xs font-bold text-green tracking-widest uppercase">Somnia Agent</span>
           </div>
           <span className="text-border-bright text-xs">|</span>
-          <span className="font-mono text-xs text-text-muted">Sepolia Testnet</span>
+          <span className="font-mono text-xs text-text-muted">Somnia Testnet</span>
         </div>
 
         {/* Center: contract balance */}
@@ -29,7 +29,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-2 font-mono text-xs">
             <span className="text-text-muted">Vault Balance:</span>
             <span className="text-green font-bold">
-              {parseFloat(formatEther(contractBalance.value)).toFixed(6)} ETH
+              {parseFloat(formatEther(contractBalance.value)).toFixed(6)} STT
             </span>
           </div>
         )}
@@ -38,7 +38,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           {balance && (
             <span className="font-mono text-xs text-text-muted hidden sm:block">
-              {parseFloat(formatEther(balance.value)).toFixed(4)} ETH
+              {parseFloat(formatEther(balance.value)).toFixed(4)} STT
             </span>
           )}
           <ConnectButton chainStatus="icon" showBalance={false} accountStatus={{ smallScreen: 'avatar', largeScreen: 'full' }} />
@@ -55,7 +55,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-4 text-text-muted text-xs font-mono">
-          <span>CHAIN:11155111</span>
+          <span>CHAIN:50312</span>
           <span className="text-border-bright">|</span>
           <span className="inline-flex items-center gap-1"><Timer size={12} /> TIMELOCK:10MIN</span>
           <span className="text-border-bright">|</span>

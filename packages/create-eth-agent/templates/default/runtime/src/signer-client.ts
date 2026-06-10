@@ -1,7 +1,7 @@
 import { createWalletClient, http } from "viem"
-import { sepolia } from "viem/chains"
 import { privateKeyToAccount } from "viem/accounts"
 import { requireAddress, requireEnv, requirePrivateKey } from "./env"
+import { somniaTestnet } from "./chain"
 
 const AGENT_WALLET_ABI = [{
   name: "execute",
@@ -28,8 +28,8 @@ async function executeViaLocalSigner(input: { target: `0x${string}`; value: bigi
   const agent = privateKeyToAccount(requirePrivateKey("AGENT_PRIVATE_KEY"))
   const walletClient = createWalletClient({
     account: agent,
-    chain: sepolia,
-    transport: http(requireEnv("ALCHEMY_RPC_URL"))
+    chain: somniaTestnet,
+    transport: http(requireEnv("RPC_URL"))
   })
 
   const txHash = await walletClient.writeContract({
@@ -54,7 +54,7 @@ async function executeViaProxySigner(input: { target: `0x${string}`; value: bigi
     },
     body: JSON.stringify({
       action: "agent_wallet_execute",
-      chainId: sepolia.id,
+      chainId: somniaTestnet.id,
       contractAddress: AGENT_WALLET_ADDRESS,
       target: input.target,
       value: input.value.toString(),

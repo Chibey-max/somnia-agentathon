@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Zap, ExternalLink, Bot, Trash2 } from 'lucide-react';
 import { Panel, Button } from '@/components/shared';
-import { getEtherscanLink, publicClient } from '@/lib/utils';
+import { getExplorerLink, publicClient } from '@/lib/utils';
 import { useAccount, useSendTransaction } from 'wagmi';
 import { formatEther, isAddress, parseEther } from 'viem';
 
@@ -27,12 +27,12 @@ type PendingDirectTransfer = {
   amount: string;
 };
 
-const CHAT_STORAGE_KEY = 'eth-agent-chat-history-v2';
+const CHAT_STORAGE_KEY = 'somnia-agent-chat-history-v2';
 
 const defaultWelcomeMessage: Message = {
   id: 'welcome',
   role: 'agent',
-  content: 'ETH Agent online. Connect to your MCP server or type a goal below. I can execute on-chain actions within my policy limits.',
+  content: 'SomniaAgent online. Connect to your MCP server or type a goal below. I can execute on-chain actions within my policy limits.',
   timestamp: new Date(),
 };
 
@@ -133,11 +133,11 @@ export function AgentChatPanel() {
         return;
       }
 
-      addMessage({ role: 'status', content: `Pending transfer: ${pendingDirectTransfer.amount} ETH to ${pendingDirectTransfer.to}. Type "confirm" to send or "cancel".` });
+      addMessage({ role: 'status', content: `Pending transfer: ${pendingDirectTransfer.amount} STT to ${pendingDirectTransfer.to}. Type "confirm" to send or "cancel".` });
       return;
     }
 
-    const directEthTransfer = goal.match(/\b(?:transfer|send)\s+([0-9]+(?:\.[0-9]+)?)\s*eth\s+(?:to\s+)?(0x[a-fA-F0-9]{40})\b/i);
+    const directEthTransfer = goal.match(/\b(?:transfer|send)\s+([0-9]+(?:\.[0-9]+)?)\s*(?:stt|eth)\s+(?:to\s+)?(0x[a-fA-F0-9]{40})\b/i);
     if (directEthTransfer) {
       const [, amount, to] = directEthTransfer;
       if (!isAddress(to)) {
@@ -146,24 +146,24 @@ export function AgentChatPanel() {
       }
 
       setPendingDirectTransfer({ to: to as `0x${string}`, amount });
-      addMessage({ role: 'status', content: `Review transfer: send ${amount} ETH from ${connectedAddress} to ${to}. Type "confirm" to proceed or "cancel".` });
+      addMessage({ role: 'status', content: `Review transfer: send ${amount} STT from ${connectedAddress} to ${to}. Type "confirm" to proceed or "cancel".` });
       return;
     }
 
     const addressInGoal = goal.match(/0x[a-fA-F0-9]{40}/);
-    const asksForBalance = /\b(?:check|get|read|show)?\s*(?:the\s+)?(?:eth\s+)?bal(?:ance)?\b/i.test(goal)
+    const asksForBalance = /\b(?:check|get|read|show)?\s*(?:the\s+)?(?:(?:stt|eth)\s+)?bal(?:ance)?\b/i.test(goal)
       || /\bbalance\b/i.test(goal);
 
     if (addressInGoal && asksForBalance) {
       const target = addressInGoal[0] as `0x${string}`;
       const balance = await publicClient.getBalance({ address: target });
-      addMessage({ role: 'agent', content: `Address ${target} has ${formatEther(balance)} ETH on Sepolia.` });
+      addMessage({ role: 'agent', content: `Address ${target} has ${formatEther(balance)} STT on Somnia Testnet.` });
       return;
     }
 
     if (asksForBalance) {
       const balance = await publicClient.getBalance({ address: connectedAddress });
-      addMessage({ role: 'agent', content: `Connected wallet ${connectedAddress} balance is ${formatEther(balance)} ETH on Sepolia.` });
+      addMessage({ role: 'agent', content: `Connected wallet ${connectedAddress} balance is ${formatEther(balance)} STT on Somnia Testnet.` });
       return;
     }
 
@@ -176,17 +176,17 @@ export function AgentChatPanel() {
       addMessage({
         role: 'agent',
         content:
-          'Absolutely. In Direct mode I can:\n• Check your connected wallet balance\n• Check ETH balance of any address\n• Send ETH from your connected wallet (with confirm/cancel safety)\n\nTry: "send 0.001 ETH to 0x..."',
+          'Absolutely. In Direct mode I can:\n• Check your connected wallet balance\n• Check STT balance of any address\n• Send STT from your connected wallet (with confirm/cancel safety)\n\nTry: "send 0.001 STT to 0x..."',
       });
       return;
     }
 
     if (conversational) {
-      addMessage({ role: 'agent', content: 'Hey! I can help with direct ETH sends and balance checks. Tell me what you want to do.' });
+      addMessage({ role: 'agent', content: 'Hey! I can help with direct STT sends and balance checks. Tell me what you want to do.' });
       return;
     }
 
-    addMessage({ role: 'agent', content: 'I can help with direct wallet actions. Try: "send <amount> ETH to 0x...", "my ETH bal", or "bal of 0x...". Sends always require "confirm" before execution.' });
+    addMessage({ role: 'agent', content: 'I can help with direct wallet actions. Try: "send <amount> STT to 0x...", "my STT bal", or "bal of 0x...". Sends always require "confirm" before execution.' });
   };
 
   const sendGoal = async () => {
@@ -330,12 +330,12 @@ export function AgentChatPanel() {
                       </span>
                       {msg.txHash && (
                         <a
-                          href={getEtherscanLink(msg.txHash)}
+                          href={getExplorerLink(msg.txHash)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="ml-2 text-blue-bright hover:underline inline-flex items-center gap-1"
                         >
-                          View on Etherscan <ExternalLink size={10} />
+                          View on Somnia Explorer <ExternalLink size={10} />
                         </a>
                       )}
                     </div>

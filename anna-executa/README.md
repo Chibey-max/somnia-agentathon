@@ -1,6 +1,6 @@
-# ETH Agent - Anna Executa Plugin
+# Somnia Agent - Anna Executa Plugin
 
-Control your Ethereum wallet from Anna chat.
+Control your Somnia wallet from Anna chat.
 
 ## Install
 npm install -g (from repo root)

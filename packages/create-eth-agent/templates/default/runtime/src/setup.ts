@@ -1,10 +1,10 @@
 import { createWalletClient, createPublicClient, http, parseUnits } from "viem"
-import { sepolia } from "viem/chains"
 import { privateKeyToAccount } from "viem/accounts"
 import { requireAddress, requireEnv, requirePrivateKey } from "./env"
+import { somniaTestnet } from "./chain"
 
 const TRANSFER_SELECTOR = "0xa9059cbb" as `0x${string}`
-const USDC    = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238" // Sepolia USDC
+const USDC    = "0x0000000000000000000000000000000000000000" // Fill with Somnia Testnet USDC address
 const CONTRACT = requireAddress("AGENT_CONTRACT_ADDRESS")
 
 const ABI = [
@@ -51,10 +51,10 @@ const ABI = [
 
 async function setup() {
   const guardian = privateKeyToAccount(requirePrivateKey("GUARDIAN_PRIVATE_KEY"))
-  const rpcUrl = requireEnv("ALCHEMY_RPC_URL")
+  const rpcUrl = requireEnv("RPC_URL")
 
-  const publicClient = createPublicClient({ chain: sepolia, transport: http(rpcUrl) })
-  const walletClient = createWalletClient({ account: guardian, chain: sepolia, transport: http(rpcUrl) })
+  const publicClient = createPublicClient({ chain: somniaTestnet, transport: http(rpcUrl) })
+  const walletClient = createWalletClient({ account: guardian, chain: somniaTestnet, transport: http(rpcUrl) })
 
   // Check timelock value
   const timelock = await publicClient.readContract({ address: CONTRACT, abi: ABI, functionName: "TIMELOCK" })

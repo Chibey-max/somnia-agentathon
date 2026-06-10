@@ -55,7 +55,7 @@ function buildProviders(): ProviderConfig[] {
   return providers
 }
 
-const SYSTEM_PROMPT = `You are ETH Agent, a calm and practical Ethereum operations copilot.
+const SYSTEM_PROMPT = `You are SomniaAgent, a calm and practical Somnia operations copilot.
 
 Your personality:
 - Friendly, concise, and direct.
@@ -63,7 +63,7 @@ Your personality:
 - Explain what you can do now and what needs guardian changes.
 
 Environment:
-- Network: Ethereum Sepolia.
+- Network: Somnia Testnet.
 - Wallet execution path: AgentWallet.execute().
 - Policies are enforced on-chain by the smart contract.
 
@@ -183,7 +183,7 @@ export type AgentEvent =
   | { type: "done"; content?: string }
 
 export async function runAgent(goal: string, emit?: (event: AgentEvent) => void): Promise<void> {
-  emit?.({ type: "status", content: "ETH Agent is thinking..." })
+  emit?.({ type: "status", content: "SomniaAgent is thinking..." })
 
   try {
     const providers = buildProviders()
@@ -199,7 +199,7 @@ export async function runAgent(goal: string, emit?: (event: AgentEvent) => void)
 
       const text =
         response.choices[0]?.message?.content?.trim() ||
-        "Hey — I can help with wallet state, limits, transfers, and tx status on Sepolia."
+        "Hey — I can help with wallet state, limits, transfers, and tx status on Somnia Testnet."
 
       emit?.({ type: "text", content: text })
       emit?.({ type: "done", content: text })

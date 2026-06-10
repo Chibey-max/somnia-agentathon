@@ -33,8 +33,8 @@ async function ask(question: string): Promise<string> {
 }
 
 async function main(): Promise<void> {
-  process.stderr.write('🤖 ETH Agent Kit\n')
-  process.stderr.write('Ethereum AI agent with on-chain policy enforcement\n\n')
+  process.stderr.write('🤖 Somnia Agent Kit\n')
+  process.stderr.write('Somnia AI agent with on-chain policy enforcement\n\n')
 
   let projectName = process.argv[2]?.trim()
   if (!projectName) projectName = await ask('Project name: ')
@@ -74,7 +74,7 @@ async function main(): Promise<void> {
       dependencies?: Record<string, string>
     }
     parsed.dependencies = parsed.dependencies ?? {}
-    parsed.dependencies['eth-agent-kit'] = `file:${path.relative(path.dirname(runtimePkgPath), localKitPath)}`
+    parsed.dependencies['somnia-agent-kit'] = `file:${path.relative(path.dirname(runtimePkgPath), localKitPath)}`
     fs.writeFileSync(runtimePkgPath, JSON.stringify(parsed, null, 2))
   }
 
@@ -97,16 +97,16 @@ async function main(): Promise<void> {
   process.stderr.write('Fill in runtime/.env:\n')
   process.stderr.write('  AGENT_CONTRACT_ADDRESS=   deployed AgentWallet address\n')
   process.stderr.write('  AGENT_PRIVATE_KEY=        agent role private key\n')
-  process.stderr.write('  RPC_URL=                  https://rpc.ankr.com/eth_sepolia\n')
+  process.stderr.write('  RPC_URL=                  https://dream-rpc.somnia.network\n')
   process.stderr.write('  GROQ_API_KEY=             free at console.groq.com\n\n')
   process.stderr.write('Build and connect to your IDE:\n')
   process.stderr.write('  npm run build\n')
   process.stderr.write('  npm run setup\n\n')
   process.stderr.write('Then restart your IDE and try:\n')
-  process.stderr.write('  "What is my ETH balance?"\n')
+  process.stderr.write('  "What is my STT balance?"\n')
   process.stderr.write('  "What are my spending limits?"\n')
-  process.stderr.write('  "Send 0.01 ETH to 0x..."\n\n')
-  process.stderr.write('Docs: github.com/Chibey-max/Ethereum-Agentic\n')
+  process.stderr.write('  "Send 0.01 STT to 0x..."\n\n')
+  process.stderr.write('Docs: github.com/Chibey-max/somnia-agentathon\n')
 }
 
 void main().catch((error: unknown) => {

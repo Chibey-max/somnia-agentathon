@@ -33,7 +33,7 @@ html {
 body {
   background-color: var(--bg);
   color: var(--text-primary);
-  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans), 'Space Grotesk', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -99,11 +99,16 @@ button {
 }
 
 input, textarea {
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-family: var(--font-mono), 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 }
 
 .font-mono {
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-family: var(--font-mono), 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+.font-display {
+  font-family: var(--font-display), 'Orbitron', sans-serif;
+  letter-spacing: 0.04em;
 }
 
 /* CRT flicker - very subtle */

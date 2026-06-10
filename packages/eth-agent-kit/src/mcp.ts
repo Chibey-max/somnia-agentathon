@@ -1,7 +1,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js'
-import { ETHAgent } from './ETHAgent'
+import { SomniaAgent } from './ETHAgent'
 
 function toJsonText(value: unknown): string {
   if (typeof value === 'string') return value
@@ -27,8 +27,8 @@ function errorResult(message: string, details?: unknown) {
   }
 }
 
-export async function startMCPServer(agent: ETHAgent): Promise<void> {
-  const server = new Server({ name: 'eth-agent-kit', version: '0.1.0' }, { capabilities: { tools: {} } })
+export async function startMCPServer(agent: SomniaAgent): Promise<void> {
+  const server = new Server({ name: 'somnia-agent-kit', version: '0.1.0' }, { capabilities: { tools: {} } })
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: ((agent as unknown as { getToolSchemas: () => Array<{ function: { name: string; description: string; parameters: Record<string, unknown> } }> }).getToolSchemas()).map((t) => ({
@@ -75,7 +75,7 @@ export async function startMCPServer(agent: ETHAgent): Promise<void> {
   try {
     transport = new StdioServerTransport()
     await server.connect(transport)
-    console.error('[mcp-server] eth-agent connected over stdio')
+    console.error('[mcp-server] somnia-agent connected over stdio')
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     console.error(`[mcp-server] startup error: ${message}`)

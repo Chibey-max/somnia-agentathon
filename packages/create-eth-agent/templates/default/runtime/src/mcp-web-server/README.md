@@ -1,6 +1,6 @@
 # MCP Web Server (`runtime/src/mcp-web-server`)
 
-HTTP + SSE MCP server for browser/web clients to control `AgentWallet` on Sepolia with contract-aware preflight guards.
+HTTP + SSE MCP server for browser/web clients to control `AgentWallet` on Somnia Testnet with contract-aware preflight guards.
 
 ## Start
 

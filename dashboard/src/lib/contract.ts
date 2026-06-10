@@ -1,7 +1,7 @@
 export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ||
   '0xE49A6044D47De19504B73aA36F31899843B05259') as `0x${string}`;
 
-export const CHAIN_ID = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || '11155111');
+export const CHAIN_ID = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || '50312');
 
 const splitRpcUrls = (value?: string) =>
   (value || '')
@@ -25,8 +25,7 @@ export const RPC_URLS = Array.from(
     ALCHEMY_RPC_URL,
     ANKR_RPC_URL,
     QUICKNODE_RPC_URL,
-    'https://eth-sepolia.g.alchemy.com/v2/demo',
-    'https://sepolia.drpc.org',
+    'https://dream-rpc.somnia.network',
   ].filter(Boolean))
 );
 
