@@ -272,6 +272,36 @@ async function answerWithoutLlm(goal: string) {
   };
 }
 
+async function requestGroq(goal: string, toolBackedAnswer: { tool: string; text: string }) {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      temperature: 0.2,
+      max_tokens: 900,
+      messages: [
+        {
+          role: 'system',
+          content: `${SYSTEM_PROMPT}\n\nLive tool context from ${toolBackedAnswer.tool}:\n${toolBackedAnswer.text}`,
+        },
+        { role: 'user', content: goal },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Groq request failed (${response.status}): ${body.slice(0, 300)}`);
+  }
+
+  const json = await response.json();
+  return json?.choices?.[0]?.message?.content?.trim() || toolBackedAnswer.text;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { goal } = await req.json();
@@ -280,6 +310,24 @@ export async function POST(req: NextRequest) {
     }
 
     const toolBackedAnswer = await answerWithoutLlm(goal);
+
+    if (process.env.GROQ_API_KEY) {
+      try {
+        const text = await requestGroq(goal, toolBackedAnswer);
+        return streamChunks([
+          { type: 'tool', name: toolBackedAnswer.tool, args: { goal } },
+          { type: 'text', content: text },
+          { type: 'done', content: '' },
+        ]);
+      } catch (error) {
+        return streamChunks([
+          { type: 'tool', name: toolBackedAnswer.tool, args: { goal } },
+          { type: 'error', content: String(error) },
+          { type: 'text', content: toolBackedAnswer.text },
+          { type: 'done', content: '' },
+        ]);
+      }
+    }
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return streamChunks([
