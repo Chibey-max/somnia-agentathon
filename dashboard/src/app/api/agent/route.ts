@@ -4,10 +4,6 @@ import Anthropic from '@anthropic-ai/sdk';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 const SYSTEM_PROMPT = `You are SomniaAgent, an autonomous AI agent running on the Somnia blockchain (chain ID: 50312, native token: STT).
 
 You operate through an AgentWallet smart contract (a hardened two-role guardian/agent model with ReentrancyGuard, token policy engine, selector-scoped whitelisting, and timelocked queues).
@@ -30,6 +26,26 @@ When a user gives you a goal, reason through what on-chain actions are needed, e
 Current network: Somnia Testnet
 Contract: ${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || 'not configured'}`;
 
+function streamChunks(chunks: object[]) {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    start(controller) {
+      for (const chunk of chunks) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    },
+  });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { goal } = await req.json();
@@ -38,19 +54,22 @@ export async function POST(req: NextRequest) {
     }
 
     if (!process.env.ANTHROPIC_API_KEY) {
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue(encoder.encode(
-            `data: ${JSON.stringify({ type: 'error', content: 'ANTHROPIC_API_KEY not configured in environment variables.' })}\n\n`
-          ));
-          controller.close();
-        }
-      });
-      return new Response(stream, {
-        headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' }
-      });
+      return streamChunks([
+        {
+          type: 'text',
+          content:
+            `SomniaAgent online. I received: "${goal}"\n\n` +
+            'The dashboard is connected to Somnia Testnet and the deployed AgentWallet. ' +
+            'For autonomous LLM responses, configure ANTHROPIC_API_KEY in Vercel or run the MCP runtime locally. ' +
+            'I can still show wallet state, policy limits, transaction history, and guardian controls from the live contract.',
+        },
+        { type: 'done', content: '' },
+      ]);
     }
+
+    const client = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
@@ -95,6 +114,6 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: String(error) }), { status: 500 });
+    return streamChunks([{ type: 'error', content: String(error) }, { type: 'done', content: '' }]);
   }
 }
