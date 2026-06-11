@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -67,6 +66,7 @@ export async function POST(req: NextRequest) {
       ]);
     }
 
+    const { default: Anthropic } = await import('@anthropic-ai/sdk');
     const client = new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
