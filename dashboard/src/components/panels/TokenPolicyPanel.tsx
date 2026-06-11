@@ -199,7 +199,7 @@ export function TokenPolicyPanel() {
               placeholder="0x..."
             />
             <Input
-              label="Daily Limit (ETH units)"
+              label="Daily Limit (STT units)"
               value={newLimit}
               onChange={setNewLimit}
               placeholder="100.0"

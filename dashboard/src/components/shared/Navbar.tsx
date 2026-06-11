@@ -1,6 +1,6 @@
 'use client';
 
-import { useAccount, useBalance } from 'wagmi';
+import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi';
 import { ShieldCheck, Timer } from 'lucide-react';
 import { CONTRACT_ADDRESS } from '@/lib/contract';
 import { formatEther } from 'viem';
@@ -9,6 +9,17 @@ export function Navbar() {
   const { address } = useAccount();
   const { data: balance } = useBalance({ address });
   const { data: contractBalance } = useBalance({ address: CONTRACT_ADDRESS });
+  const { connectors, connect, isPending } = useConnect();
+  const { disconnect } = useDisconnect();
+  const metaMaskConnector = connectors.find((c) => c.name === 'MetaMask');
+
+  const handleConnect = () => {
+    if (address) {
+      disconnect();
+    } else if (metaMaskConnector) {
+      connect({ connector: metaMaskConnector });
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-bg/95 backdrop-blur border-b border-border">
@@ -40,9 +51,13 @@ export function Navbar() {
               {parseFloat(formatEther(balance.value)).toFixed(4)} STT
             </span>
           )}
-          <span className="font-mono text-xs text-green border border-green/40 rounded px-3 py-1.5">
-            {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Somnia Testnet'}
-          </span>
+          <button
+            onClick={handleConnect}
+            disabled={isPending}
+            className="font-mono text-xs text-green border border-green/40 rounded px-3 py-1.5 hover:bg-green/5 transition disabled:opacity-50"
+          >
+            {isPending ? 'Connecting...' : address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Connect Wallet'}
+          </button>
         </div>
       </div>
 

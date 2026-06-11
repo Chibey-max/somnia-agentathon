@@ -3,6 +3,7 @@ import { createPublicClient, defineChain, http, parseAbiItem } from 'viem';
 import { CONTRACT_ADDRESS, RPC_URLS } from '@/lib/contract';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 const somniaTestnet = defineChain({
   id: 50312,

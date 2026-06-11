@@ -3,6 +3,7 @@ import { encodeFunctionData, parseEther } from 'viem';
 import { CONTRACT_ADDRESS, AGENT_WALLET_ABI } from '@/lib/contract';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // This route builds calldata for guardian actions.
 // The frontend signs and sends the tx using wagmi (connected wallet).

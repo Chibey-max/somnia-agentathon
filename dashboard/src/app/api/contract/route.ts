@@ -3,6 +3,7 @@ import { createPublicClient, defineChain, http, formatEther } from 'viem';
 import { CONTRACT_ADDRESS, AGENT_WALLET_ABI, RPC_URLS } from '@/lib/contract';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export const revalidate = 0;
 
 const CACHE_TTL_MS = 10_000;

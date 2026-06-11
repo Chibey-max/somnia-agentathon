@@ -12,7 +12,7 @@ export function SpendingLimitsPanel() {
   return (
     <Panel
       title="Spending Limits"
-      subtitle="ETH per-tx and daily caps"
+      subtitle="STT per-tx and daily caps"
       status={loading ? 'ok' : panelStatus}
       loading={loading}
     >
@@ -28,14 +28,14 @@ export function SpendingLimitsPanel() {
             <p className="text-text-primary font-mono text-sm font-bold">
               {data ? parseFloat(data.ethTxLimitFormatted).toFixed(6) : '—'}
             </p>
-            <p className="text-text-muted font-mono text-xs">ETH max/tx</p>
+            <p className="text-text-muted font-mono text-xs">STT max/tx</p>
           </div>
           <div className="bg-bg-elevated rounded p-3 border border-border">
             <p className="text-text-muted text-xs font-mono uppercase tracking-wider mb-1">Daily Limit</p>
             <p className="text-text-primary font-mono text-sm font-bold">
               {data ? parseFloat(data.ethDailyLimitFormatted).toFixed(6) : '—'}
             </p>
-            <p className="text-text-muted font-mono text-xs">ETH/day</p>
+            <p className="text-text-muted font-mono text-xs">STT/day</p>
           </div>
         </div>
 
@@ -47,7 +47,7 @@ export function SpendingLimitsPanel() {
               <span className="text-text-secondary text-xs font-mono">
                 {data ? parseFloat(data.ethDailySpentFormatted).toFixed(6) : '0.000000'}
                 {' / '}
-                {data ? parseFloat(data.ethDailyLimitFormatted).toFixed(6) : '0.000000'} ETH
+                {data ? parseFloat(data.ethDailyLimitFormatted).toFixed(6) : '0.000000'} STT
               </span>
             </div>
           </div>
@@ -74,13 +74,13 @@ export function SpendingLimitsPanel() {
               <div>
                 <p className="text-text-muted text-xs font-mono">New Per-TX</p>
                 <p className="text-orange font-mono text-xs font-bold">
-                  {parseFloat(data.pendingLimitChange.txLimitFormatted).toFixed(6)} ETH
+                  {parseFloat(data.pendingLimitChange.txLimitFormatted).toFixed(6)} STT
                 </p>
               </div>
               <div>
                 <p className="text-text-muted text-xs font-mono">New Daily</p>
                 <p className="text-orange font-mono text-xs font-bold">
-                  {parseFloat(data.pendingLimitChange.dailyLimitFormatted).toFixed(6)} ETH
+                  {parseFloat(data.pendingLimitChange.dailyLimitFormatted).toFixed(6)} STT
                 </p>
               </div>
             </div>

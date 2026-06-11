@@ -16,7 +16,15 @@ async function tryStartKitServer(): Promise<boolean> {
       return false
     }
 
-    const agent = new kit.SomniaAgent({
+    // Support multiple possible exports from somnia-agent-kit (historical name changes).
+    const kAny: any = kit;
+    const AgentCtor = kAny.SomniaAgent ?? kAny.SomniaAgentKit ?? kAny.default?.SomniaAgent ?? kAny.default?.SomniaAgentKit;
+    if (!AgentCtor) {
+      console.error('[mcp-server] somnia-agent-kit found but no compatible export (SomniaAgent|SomniaAgentKit)');
+      return false;
+    }
+
+    const agent = new AgentCtor({
       contractAddress,
       privateKey,
       rpcUrl,

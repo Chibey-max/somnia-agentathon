@@ -46,7 +46,7 @@ somnia-agent-kit/
 ## Deployed Contract
 
 ```
-AGENT_WALLET_ADDRESS=<deployed on Somnia Testnet>
+AGENT_WALLET_ADDRESS=0x65479a6491061d1c0D7200292Da83f4D48Fc12f7
 ```
 
 > Fill this in after running the deploy script below.
@@ -97,7 +97,7 @@ cp .env.example .env
 # fill in:
 #   RPC_URL=https://dream-rpc.somnia.network
 #   CHAIN_ID=50312
-#   AGENT_CONTRACT_ADDRESS=<deployed address>
+#   AGENT_CONTRACT_ADDRESS=0x65479a6491061d1c0D7200292Da83f4D48Fc12f7
 #   AGENT_PRIVATE_KEY=<agent key>
 #   GROQ_API_KEY=<your key>
 
@@ -204,7 +204,7 @@ The agent executes multi-step on-chain flows without human intervention: read wa
 RPC_URL=https://dream-rpc.somnia.network
 CHAIN_ID=50312
 NETWORK=somnia_testnet
-CONTRACT_ADDRESS=   # fill after deploy
+CONTRACT_ADDRESS=0x65479a6491061d1c0D7200292Da83f4D48Fc12f7
 AGENT_PRIVATE_KEY=0x
 GUARDIAN_ADDRESS=0x
 GROQ_API_KEY=

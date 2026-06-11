@@ -1,5 +1,5 @@
 export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ||
-  '0xE49A6044D47De19504B73aA36F31899843B05259') as `0x${string}`;
+  '0x65479a6491061d1c0D7200292Da83f4D48Fc12f7') as `0x${string}`;
 
 export const CHAIN_ID = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || '50312');
 
